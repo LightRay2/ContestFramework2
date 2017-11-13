@@ -10,8 +10,8 @@ namespace CSharpTemplate
     {
         static void Main(string[] args)
         {
-            SolverA.Run();
-           // SolverB.Run();
+            //SolverA.Run();
+            SolverB.Run();
            // SolverC.Run();
            // SolverD.Run();
            // SolverE.Run();

@@ -11,14 +11,122 @@ namespace CSharpTemplate
 {
     public class SolverA
     {
+        class Elem
+        {
+            public int type;
+            public int pos;
+            public int hp;
+            public Elem(int type,int hp, int pos)
+            {
+                this.type = type;
+                this.pos = pos;
+                this.hp = hp;
+            }
+        }
+
 
         void Solve()
         {
             //changle line in Program.cs to use this solver
             //code here. use Read...() and Write(...,...,...)
-
+            List<Elem> a = new List<Elem>();
             int n = ReadInt();
-            Write(n);
+            int hp= ReadInt();
+            int g = ReadInt();
+            int pos = ReadInt();
+            int[] ddd = ReadIntArray();
+            int count = ReadInt();
+
+            for(int i=0;i<count;i++)
+            {
+
+              int   a1 = ReadInt();
+              int  a2 = ReadInt();
+              int   a3 = ReadInt();
+              a.Add(new Elem(a1,a2,a3));
+            }
+            if (n < 20)
+            {
+
+                Write('S', 0);
+            }
+            else
+            {
+                if (n < 30)
+                {
+                    Write('R', 3);
+                }
+                else
+                {
+                    if(n<33)
+                    Write('R', 0);
+                    else
+                    {
+                        if (n < 35)
+                            Write('S', 2);
+                        else
+                        {
+                            Write('S', 6);
+                        }
+                    }
+                }
+            }
+            /*if (n > 50)
+            {
+                int k = -1;
+                for (int i = 0; i < count; i++)
+                {
+                    if (a[i].type == 2 && a[i].pos < 9)
+                    {
+                        k = a[i].pos;
+                        break;
+                    }
+                }
+                if (k == -1)
+                {
+                    Write('S', 2);
+                }
+                else
+                {
+                    if (k > pos)
+                    {
+                        Write('R', 0);
+                    }
+                    else
+                    {
+                        if (k < pos)
+                        {
+                            Write('L', 0);
+                        }
+                        else
+                        {
+                            Write('S', 6);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (pos < 8)
+                {
+                    if(g>600)
+                    Write('R', pos % 6);
+                    else
+                    {
+                        Write('R', 0);
+                    }
+                }
+                else
+                {
+                    if (g > 600)
+                    Write('L', pos % 6);
+                    else
+                    {
+                        Write('l', 0);
+                    }
+                }
+            }*/
+
         }
 
 

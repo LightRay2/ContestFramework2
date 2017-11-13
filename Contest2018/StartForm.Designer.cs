@@ -190,7 +190,7 @@
             // btnChangeOrder
             // 
             this.btnChangeOrder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnChangeOrder.Location = new System.Drawing.Point(179, 166);
+            this.btnChangeOrder.Location = new System.Drawing.Point(175, 166);
             this.btnChangeOrder.Name = "btnChangeOrder";
             this.btnChangeOrder.Size = new System.Drawing.Size(192, 35);
             this.btnChangeOrder.TabIndex = 4;
@@ -202,7 +202,7 @@
             // 
             this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.panel2.Controls.Add(this.btnRun);
-            this.panel2.Location = new System.Drawing.Point(318, 419);
+            this.panel2.Location = new System.Drawing.Point(314, 419);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(248, 69);
             this.panel2.TabIndex = 3;
@@ -231,7 +231,7 @@
             // btnClearSelection
             // 
             this.btnClearSelection.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClearSelection.Location = new System.Drawing.Point(377, 166);
+            this.btnClearSelection.Location = new System.Drawing.Point(373, 166);
             this.btnClearSelection.Name = "btnClearSelection";
             this.btnClearSelection.Size = new System.Drawing.Size(189, 35);
             this.btnClearSelection.TabIndex = 5;
