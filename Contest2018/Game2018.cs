@@ -41,8 +41,8 @@ namespace Contest2018
         public Enum fontOnTimeLine { get; set; }
         public string nameOnTimeLine { get; set; }
 
-        public int action;
-        public int pos;
+        public int action;//действие игрока
+        public int pos;//его предыдущая позиция
 
         public Turn()
         {
@@ -103,9 +103,8 @@ namespace Contest2018
         public List<Round> rounds { get; set; }
         public bool GameFinished { get; set; }
         public int clickedRound { get; set; }
-
-        public  int[] gamearr = new int[18];//что в каждой клетке находится       
-        public int CurrentPlayer = 0;//Какой игрок выбран
+  
+        public int CurrentPlayer = 0;//Следующий игрок(так получилось)!!!
         public List<ObjectGame> gameobjects;
         public string st;
         public enum EFont
@@ -145,10 +144,6 @@ namespace Contest2018
             if (_gameInstancePurpose == GamePurpose.LoadSpritesAndFonts)
                 return;
             //----
-            for(int i=0;i<18;i++)
-            {
-                gamearr[i] = 0;
-            }
             gameobjects = new List<ObjectGame>();
             //----
 
@@ -192,8 +187,8 @@ namespace Contest2018
 
             FrameworkSettings.Timeline.Enabled = true;
             FrameworkSettings.Timeline.Position = TimelinePositions.right;
-            FrameworkSettings.Timeline.TileLength = 7;
-            FrameworkSettings.Timeline.TileWidth = 7;
+            FrameworkSettings.Timeline.TileLength = 20;
+            FrameworkSettings.Timeline.TileWidth = 30;
             FrameworkSettings.Timeline.TurnScrollSpeedByMouseOrArrow = 8;
             FrameworkSettings.Timeline.TurnScrollSpeedByPageUpDown = 100;
             FrameworkSettings.Timeline.FollowAnimationTimeMs = 600;
@@ -262,7 +257,7 @@ namespace Contest2018
                 }
             }
             st.AppendLine(player.memory);
-         this.st= st.ToString();
+            this.st= st.ToString();
             return st.ToString(); ;
         }
 
@@ -272,14 +267,12 @@ namespace Contest2018
             {
                 shortStatus = executionResultRussianComment,
                 output = output,
-                colorOnTimeLine = player.team == 0 ? Color.DarkRed : Color.DarkGreen,            //Color.FromArgb(148,36,26) : Color.FromArgb(85,110,84),//
+                colorOnTimeLine = player.team == 0 ? Color.DarkRed : Color.DarkGreen,            
                 nameOnTimeLine = roundNumber.ToString(),
-                colorStatusOnTimeLine = Color.Gold
+                colorStatusOnTimeLine = Color.Gold,
+                input = roundNumber.ToString(),
             }; //todo now in interface just edit turn, no return
 
-            /*turn.manAims = new List<Vector2d>();
-            for (int i = 0; i < 1; i++)
-                turn.manAims.Add(player.manList[i].position);*/
 
 
 
@@ -490,7 +483,7 @@ namespace Contest2018
                                 {
                                     double start = gameobjects[i].pos + 140 + 65 * gameobjects[i].pos;
                                     animshells.Add(new Animator<double>(Animator.Linear, start, (start + 65 * gameobjects[i].distance < 1170 ? start + 65 * gameobjects[i].distance : 1170) + r % 2 * 65, 1));
-                                    Purpose = (gameobjects[i].pos + gameobjects[i].distance + r % 2 < 18 ? gameobjects[i].pos + gameobjects[i].distance + r % 2 : 18);
+                                    Purpose = (gameobjects[i].pos + gameobjects[i].distance + r % 2 );
                                 }
                                 else
                                 {
@@ -498,7 +491,7 @@ namespace Contest2018
                                     {
                                         double start = gameobjects[i].pos + 140 + 65 * gameobjects[i].pos;
                                         animshells.Add(new Animator<double>(Animator.Linear, start, (start - 65 * gameobjects[i].distance > 100 ? start - 65 * gameobjects[i].distance : 100) + r % 2 * 65, 1));
-                                        Purpose = (gameobjects[i].pos - gameobjects[i].distance - r % 2 >= 0 ? gameobjects[i].pos - gameobjects[i].distance - r % 2 : -1);
+                                        Purpose = (gameobjects[i].pos - gameobjects[i].distance - r % 2);
                                     }
                                 }
                                 if (Purpose != -100)
@@ -509,7 +502,7 @@ namespace Contest2018
                                     }
                                     else
                                     {
-                                        if (Purpose == 18)
+                                        if (Purpose > 17)
                                         {
                                             players[1].hptower -= gameobjects[i].damage;
                                         }
@@ -593,8 +586,8 @@ namespace Contest2018
             }
             if (animplayer0 != null )
             {
-                frame.SpriteCenter(ESprite.playerr, 132 + animplayer0.Get(stage), 400);
-                frame.SpriteCenter(ESprite.playerl, 132 + animplayer1.Get(stage), 400);
+                frame.SpriteCenter(ESprite.playerr, 132 + animplayer0.Get(stage), 430);
+                frame.SpriteCenter(ESprite.playerl, 132 + animplayer1.Get(stage), 430);
             }
             for (int i = 0; i < gameobjects.Count; i++)
             {
@@ -652,7 +645,8 @@ namespace Contest2018
             {
                 frame.Circle(Color.Black, animshells[i].Get(stage), 332, 10);
             }
-            frame.TextCenter(EFont.player0, st, 300, 400);
+
+            frame.TextCenter(EFont.player0, st, 300, 550);//вывод всего кода
 
 
             // }
