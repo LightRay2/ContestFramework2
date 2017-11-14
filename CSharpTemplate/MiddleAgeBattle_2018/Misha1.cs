@@ -9,14 +9,66 @@ using System.Threading;
 
 namespace CSharpTemplate
 {
-    public class SolverC
+    public class Misha1
     {
+
+        int hp, gold, pos, round;
+        int enemyHp, enemyGold, enemyPos,cnt;
+        int[] house = new int[18], houseHp = new int[18];
+
+        void GoToTile(int tile, int act)
+        {
+            if (Math.Abs(pos - tile) > 1)
+                act = 0;
+            if (pos > tile)
+            {
+                Write("L",act);
+            }
+            else if (pos < tile)
+            {
+                Write("R",act);
+            }
+            else
+            {
+                Write("S",act);
+            }
+        }
 
         void Solve()
         {
             //changle line in Program.cs to use this solver
             //code here. use Read...() and Write(...,...,...)
+            round = ReadInt(); hp = ReadInt(); gold = ReadInt(); pos = ReadInt(); enemyHp = ReadInt(); enemyGold = ReadInt(); enemyPos = ReadInt(); cnt = ReadInt();
+            for (int i = 0; i < cnt; i++)
+            {
+                int homeType = ReadInt(),  homeHp = ReadInt(), homePos = ReadInt() ;
+                house[homePos] = homeType;
+                houseHp[homePos] = homeHp;
+            }
+            
+            for (int i = 2; i < 9; i++)
+            {
 
+
+                int aim = -1;
+                if (i >= 2 && i <= 4)
+                {
+                    aim = 1;
+                }
+                else if (i >= 6)
+                {
+                    aim = 4;
+                }
+                else if (i == 5) { aim = 5; }
+                if (aim != -1 && house[i] != aim)
+                {
+                    GoToTile(i, aim);
+                    return;
+                }
+
+            }
+
+            GoToTile(5, 6);
         }
 
 
@@ -43,9 +95,9 @@ namespace CSharpTemplate
                 //writer = Console.Out;
                 writer = new StreamWriter("output.txt");
             }
-            
-            new SolverC().Solve();
-          
+
+            new Misha1().Solve();
+
             reader.Close();
             writer.Close();
         }

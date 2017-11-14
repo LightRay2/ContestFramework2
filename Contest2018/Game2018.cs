@@ -187,8 +187,8 @@ namespace Contest2018
 
             FrameworkSettings.Timeline.Enabled = true;
             FrameworkSettings.Timeline.Position = TimelinePositions.right;
-            FrameworkSettings.Timeline.TileLength = 20;
-            FrameworkSettings.Timeline.TileWidth = 30;
+            FrameworkSettings.Timeline.TileLength = 50;
+            FrameworkSettings.Timeline.TileWidth = 50;
             FrameworkSettings.Timeline.TurnScrollSpeedByMouseOrArrow = 8;
             FrameworkSettings.Timeline.TurnScrollSpeedByPageUpDown = 100;
             FrameworkSettings.Timeline.FollowAnimationTimeMs = 600;
@@ -198,8 +198,8 @@ namespace Contest2018
         {
             if (FontList.All.Count == 0 && SpriteList.All.Count == 0)
             {
-                FontList.Load(EFont.timelineNormal, "Times New Roman", 2.0, Color.FromArgb(193, 180, 255), FontStyle.Bold);
-                FontList.Load(EFont.timelineError, "Times New Roman", 2.0, Color.Red, FontStyle.Bold);
+                FontList.Load(EFont.timelineNormal, "Times New Roman", 20.0, Color.FromArgb(193, 180, 255), FontStyle.Bold);
+                FontList.Load(EFont.timelineError, "Times New Roman", 20.0, Color.Red, FontStyle.Bold);
 
                 FontList.Load(EFont.main, "Times New Roman", 3.0, Color.FromArgb(193, 209, 255), FontStyle.Bold);
 
@@ -545,15 +545,18 @@ namespace Contest2018
 
         }
 
-
         public void DrawAll(Frame frame, double stage, double totalStage, bool humanMove, GlInput input) //todo human move??
         {
             //!!! будьте внимательны (ранний drawall перед любыми методами)
             // int frameWidth = 160, frameHeight = 120;
-            frame.CameraViewport(1400, 700);
+            frame.CameraViewport(1400, 1050);
 
-            frame.PolygonWithDepth(Color.White, -100, new Rect2d(0, 0, 1400, 700)); //todo line around polygon
+            frame.PolygonWithDepth(Color.White, -100, new Rect2d(0, 0, 1400, 1050)); //todo line around polygon
                                                                                     //frame.SpriteCorner(ESprite.brownGrunge, 0, -100, sizeOnlyHeight: frameHeight + 100);
+
+            //todo nikita если щелкаем на первый квадратик, никакого process еще не произошло, а отрисовывать что то нужно. я пока написал, чтобы не вылетало, но это не выход:
+            if (animshells == null)
+                return;
 
             //  frame.SpriteCorner(ESprite.back2, 0, 0, sizeOnlyWidth: frameWidth);
 

@@ -43,11 +43,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MiddleAgeBattle_2018\Misha2.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SolverA.cs" />
-    <Compile Include="SolverB.cs" />
-    <Compile Include="SolverC.cs" />
+    <Compile Include="MiddleAgeBattle_2018\SolverA.cs" />
+    <Compile Include="MiddleAgeBattle_2018\SolverB.cs" />
+    <Compile Include="MiddleAgeBattle_2018\Misha1.cs" />
     <Compile Include="SolverD.cs" />
     <Compile Include="TemplateSolver_DoNotUseIt_OnlyCopy.cs" />
   </ItemGroup>
