@@ -231,20 +231,25 @@ namespace Contest2018
         public string GetInputFile(Player player)
         {
             var st = new StringBuilder();
+            st.AppendLine(roundNumber.ToString());
             if (player.team == 0)
             {
-                st.AppendLine(roundNumber.ToString() + " " + player.hptower.ToString() + " " + player.gold.ToString() + " " + player.pos.ToString());
+                st.AppendLine(player.hptower.ToString() + " " + player.gold.ToString() + " " + player.pos.ToString());
                 st.AppendLine(players[(player.team + 1) % 2].hptower.ToString() + " " + players[(player.team + 1) % 2].gold.ToString() + " " + players[(player.team + 1) % 2].pos.ToString());
             }
             else
             {
-                st.AppendLine(roundNumber.ToString() + " " + player.hptower.ToString() + " " + player.gold.ToString() + " " +(17- player.pos).ToString());
+                st.AppendLine(player.hptower.ToString() + " " + player.gold.ToString() + " " +(17- player.pos).ToString());
                 st.AppendLine(players[(player.team + 1) % 2].hptower.ToString() + " " + players[(player.team + 1) % 2].gold.ToString() + " " +(17- players[(player.team + 1) % 2].pos).ToString());
             }
-            st.AppendLine(gameobjects.Count.ToString());
+            //st.AppendLine(gameobjects.Count.ToString());
+            int[] arrt = new int[18];
+            int[] arrhp = new int[18];
             for (int i=0;i<gameobjects.Count;i++)
             {
-                if(player.team==0)
+                arrt[gameobjects[i].pos] = (int)gameobjects[i].obj;
+                arrhp[gameobjects[i].pos] = (int)gameobjects[i].hp;
+                /*if(player.team==0)
                 {
                     st.AppendLine(((int)gameobjects[i].obj).ToString() + " " + gameobjects[i].hp.ToString() + " " + gameobjects[i].pos.ToString());
                 }
@@ -254,7 +259,33 @@ namespace Contest2018
                     st.AppendLine(((int)gameobjects[i].obj).ToString() + " " + gameobjects[i].hp.ToString() + " " + (17-gameobjects[i].pos).ToString() );
                     else
                     st.AppendLine(((int)gameobjects[i].obj).ToString() + " " + gameobjects[i].hp.ToString() + " " + (17-gameobjects[i].pos).ToString());
+                }*/
+            }
+            if (player.team == 0)
+            {
+                for (int i = 0; i < 18; i++)
+                {
+                    st.Append(arrt[i].ToString() + " ");
                 }
+                st.AppendLine("");
+                for (int i = 0; i < 18; i++)
+                {
+                    st.Append(arrhp[i].ToString() + " ");
+                }
+                st.AppendLine("");
+            }
+            else
+            {
+                for (int i = 17; i >=0; i--)
+                {
+                    st.Append(arrt[i].ToString() + " ");
+                }
+                st.AppendLine("");
+                for (int i = 17; i >= 0; i--)
+                {
+                    st.Append(arrhp[i].ToString() + " ");
+                }
+                st.AppendLine("");
             }
             st.AppendLine(player.memory);
             this.st= st.ToString();
@@ -388,6 +419,7 @@ namespace Contest2018
         List<Animator<double>> animshells;
         Animator<int> animplayer0;
         Animator<int> animplayer1;
+        int buildpozision = -1;
         public static int Linear(int start, int finish, double stage)
         {
             var dif = finish - start;
@@ -402,7 +434,7 @@ namespace Contest2018
             round.totalStage = 1;
             animobject = null;
             animshells = new List<Animator<double>>();
-            int currentplayer = (CurrentPlayer + 1) % 2;
+            int currentplayer = round.turns[0].player.team; 
 
             if (currentplayer == 0)
             {
@@ -415,7 +447,8 @@ namespace Contest2018
                 animplayer1 = new Animator<int>(Linear, 65 * round.turns[0].pos, 65 * players[1].pos, 1);
             }
             if (round.turns[0].action != 0 && round.turns[0].action != 6)
-                gameobjects.RemoveAll((x) => x.pos == round.turns[0].pos);
+                gameobjects.RemoveAll((x) => x.pos == round.turns[0].player.pos);
+            buildpozision = -1;
             switch (round.turns[0].action)
             {
                 case 1:
@@ -423,8 +456,10 @@ namespace Contest2018
                         if (players[currentplayer].gold >= 600 + roundNumber)
                         {
                             players[currentplayer].gold -= 600 + roundNumber;
-                            gameobjects.Add(new ObjectGame(TypeofObject.farm, 150, 0, 0, round.turns[0].pos));
+                            gameobjects.Add(new ObjectGame(TypeofObject.farm, 150, 0, 0, round.turns[0].player.pos));
                             animobject = new Animator<int>(Linear, 0, 255, 1);
+                            buildpozision = round.turns[0].player.pos;
+
                         }
                         break;
                     }
@@ -433,8 +468,9 @@ namespace Contest2018
                         if (players[currentplayer].gold >= 200)
                         {
                             players[currentplayer].gold -= 200;
-                            gameobjects.Add(new ObjectGame(TypeofObject.observationtower, 200, 0, 0, round.turns[0].pos));
+                            gameobjects.Add(new ObjectGame(TypeofObject.observationtower, 200, 0, 0, round.turns[0].player.pos));
                             animobject = new Animator<int>(Linear, 0, 255, 1);
+                            buildpozision = round.turns[0].player.pos;
                         }
                         break;
                     }
@@ -443,8 +479,9 @@ namespace Contest2018
                         if (players[currentplayer].gold >= 1000 - 3 * roundNumber)
                         {
                             players[currentplayer].gold -= 1000 - 3 * roundNumber;
-                            gameobjects.Add(new ObjectGame(TypeofObject.catapult, 100, 8, 50, round.turns[0].pos));
+                            gameobjects.Add(new ObjectGame(TypeofObject.catapult, 100, 8, 50, round.turns[0].player.pos));
                             animobject = new Animator<int>(Linear, 0, 255, 1);
+                            buildpozision = round.turns[0].player.pos;
                         }
                         break;
                     }
@@ -453,8 +490,9 @@ namespace Contest2018
                         if (players[currentplayer].gold >= 1800 - 5 * roundNumber)
                         {
                             players[currentplayer].gold -= 1800 - 5 * roundNumber;
-                            gameobjects.Add(new ObjectGame(TypeofObject.cannon, 175, 10, 75, round.turns[0].pos));
+                            gameobjects.Add(new ObjectGame(TypeofObject.cannon, 175, 10, 75, round.turns[0].player.pos));
                             animobject = new Animator<int>(Linear, 0, 255, 1);
+                            buildpozision = round.turns[0].player.pos;
                         }
                         break;
                     }
@@ -463,8 +501,9 @@ namespace Contest2018
                         if (players[currentplayer].gold >= 1600 - 7 * roundNumber)
                         {
                             players[currentplayer].gold -= 1600 - 7 * roundNumber;
-                            gameobjects.Add(new ObjectGame(TypeofObject.ballista, 100, 12, 60, round.turns[0].pos));
+                            gameobjects.Add(new ObjectGame(TypeofObject.ballista, 100, 12, 60, round.turns[0].player.pos));
                             animobject = new Animator<int>(Linear, 0, 255, 1);
+                            buildpozision = round.turns[0].player.pos;
                         }
                         break;
                     }
@@ -490,7 +529,7 @@ namespace Contest2018
                                     if (round.turns[0].player.team == 1 && gameobjects[i].pos > 8 && (int)gameobjects[i].obj > 2)
                                     {
                                         double start = gameobjects[i].pos + 140 + 65 * gameobjects[i].pos;
-                                        animshells.Add(new Animator<double>(Animator.Linear, start, (start - 65 * gameobjects[i].distance > 100 ? start - 65 * gameobjects[i].distance : 100) + r % 2 * 65, 1));
+                                        animshells.Add(new Animator<double>(Animator.Linear, start, (start - 65 * gameobjects[i].distance > 100 ? start - 65 * gameobjects[i].distance : 100) + r % 2 * 65,1));
                                         Purpose = (gameobjects[i].pos - gameobjects[i].distance - r % 2);
                                     }
                                 }
@@ -594,6 +633,7 @@ namespace Contest2018
             }
             for (int i = 0; i < gameobjects.Count; i++)
             {
+                if(gameobjects[i].pos != buildpozision || stage>0.95)
                 switch ((int)gameobjects[i].obj)
                 {
                     case 1:

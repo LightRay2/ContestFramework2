@@ -16,11 +16,9 @@ namespace CSharpTemplate
             public int type;
             public int pos;
             public int hp;
-            public Elem(int type, int hp,int pos)
+            public Elem()
             {
-                this.type = type;
-                this.pos = pos;
-                this.hp = hp;
+
             }
         }
         void Solve()
@@ -33,15 +31,28 @@ namespace CSharpTemplate
             int g = ReadInt();
             int pos = ReadInt();
             int[] ddd = ReadIntArray();
-            int count = ReadInt();
-
-            for (int i = 0; i < count; i++)
+            int count = 0;
+            for (int i = 0; i < 18; i++)
             {
 
                 int a1 = ReadInt();
-                int a2 = ReadInt();
-                int a3 = ReadInt();
-                a.Add(new Elem(a1, a2, a3));
+                if(a1!=0)
+                {
+                    count++;
+                    a.Add(new Elem());
+                    a[count - 1].pos = i;
+                    a[count - 1].type = a1;
+                }
+            }
+            count = 0;
+            for (int i = 0; i < 18; i++)
+            {
+                int a1 = ReadInt();
+                if(a1!=0)
+                {
+                    count++;
+                    a[count - 1].hp = hp;
+                }
             }
             if (n < 30 )
             {
@@ -56,12 +67,14 @@ namespace CSharpTemplate
             }
             else
             { 
-                    if (n < 30)
-                        Write('R', 0);
-                    else
-                    {
+
                     if (n < 38)
                         Write('R', 3 + n % 3);
+                    else {
+                    if(n<40)
+                    {
+                        Write('R', 0);
+                    }
                     else
                     {
                         int k = -1;
