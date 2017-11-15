@@ -12,7 +12,7 @@ namespace CSharpTemplate
         {
             //SolverA.Run();
             SolverB.Run();
-            // Misha2.Run();
+            //Misha1.Run();
            // SolverC.Run();
            // SolverD.Run();
            // SolverE.Run();

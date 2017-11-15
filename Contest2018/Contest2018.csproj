@@ -129,6 +129,8 @@
     <Content Include="_Content\images\tower.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="_Content\Misha1.exe" />
+    <Content Include="_Content\Misha2.exe" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

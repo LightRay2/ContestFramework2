@@ -16,36 +16,33 @@ namespace CSharpTemplate
         int enemyHp, enemyGold, enemyPos,cnt;
         int[] house = new int[18], houseHp = new int[18];
 
-        void GoToTile(int tile, int act)
+
+        void GoToTile(int tile, int act,bool force=false)
         {
+            if (force ==false && Math.Abs(pos - tile) > 1)
+                act = 0;
             if (pos > tile)
             {
-                Write("L");
+                Write("L", act);
             }
             else if (pos < tile)
             {
-                Write("R");
+                Write("R", act);
             }
             else
             {
-                Write("S");
+                Write("S", act);
             }
-            if (Math.Abs(pos - tile) <= 1)
-                Write(act);
-            else
-                Write(0);
         }
 
         void Solve()
         {
             //changle line in Program.cs to use this solver
             //code here. use Read...() and Write(...,...,...)
-            round = ReadInt(); hp = ReadInt(); gold = ReadInt(); pos = ReadInt(); enemyHp = ReadInt(); enemyGold = ReadInt(); enemyPos = ReadInt(); cnt = ReadInt();
-            for (int i = 0; i < cnt; i++)
+            round = ReadInt(); hp = ReadInt(); gold = ReadInt(); pos = ReadInt(); enemyHp = ReadInt(); enemyGold = ReadInt(); enemyPos = ReadInt(); 
+            for (int i = 0; i < 18; i++)
             {
-                int homeType = ReadInt(),  homeHp = ReadInt(), homePos = ReadInt() ;
-                house[homePos] = homeType;
-                houseHp[homePos] = homeHp;
+                house[i] = ReadInt();
             }
 
             if (round < 80)
@@ -65,19 +62,19 @@ namespace CSharpTemplate
             }
             else
             {
-                int eee = round / 20;
+                int eee = round / 40;
                 int aimPos = eee % 2 == 0 ? 0 : 8;
                 if (Math.Abs(pos - aimPos) <= 1)
                 {
-                    if (house[aimPos] == 5)
+                    if (house[aimPos] == 2)
                         GoToTile(aimPos, 6);
                     else
-                        GoToTile(aimPos, 5);
+                        GoToTile(aimPos, 2);
                 }
                 else
                 {
                     int nextPos = aimPos == 0 ? pos - 1 : pos + 1;
-                    GoToTile(aimPos, (house[nextPos] < 2 || house[nextPos] > 4) ? new Random().Next(2,5) : (0));
+                    GoToTile(aimPos, (house[nextPos] < 3 ) ?( new Random().Next(3,6) ): (0), true);
                 }
             }
         }
