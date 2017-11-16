@@ -403,15 +403,15 @@ namespace Contest2018
 
         public List<Player> GetTurnOrderForNextRound()
         {
-            List<Player> l = new List<Player>(1);
+            List<Player> l = new List<Player>();
             l.Add(players[CurrentPlayer]);
-            CurrentPlayer = (CurrentPlayer + 1) % 2;
             return l;
         }
 
 
         public void PreparationsBeforeRound()
         {
+            CurrentPlayer = (CurrentPlayer + 1) % 2;
 
         }
 
