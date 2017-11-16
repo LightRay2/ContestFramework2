@@ -513,7 +513,6 @@ namespace Contest2018
                         if (players[currentplayer].gold >= 400 && gameobjects.Find(x => x.obj == TypeofObject.observationtower && players[currentplayer].pos == x.pos) != null)
                         {
                             players[currentplayer].gold -= 400;
-                            _rand = new Random();
                             for (int i = 0; i < gameobjects.Count; i++)
                             {
                                 double Purpose = -100;
