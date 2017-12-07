@@ -43,7 +43,7 @@ namespace Contest2018
 
         public int action;//действие игрока
         public int pos;//его предыдущая позиция
-
+        public int delta;
         public Turn()
         {
             fontOnTimeLine = Game2018.EFont.timelineNormal;
@@ -81,6 +81,7 @@ namespace Contest2018
         public int distance;
         public int pos;
         public int damage;
+        public bool isnew;//для отрисовки
         public ObjectGame( TypeofObject obj, int hp, int distance,int damage,int pos)
         {
             this.hp = hp;
@@ -88,6 +89,7 @@ namespace Contest2018
             this.distance = distance;
             this.pos = pos;
             this.damage = damage;
+            isnew = true;
         }
     }
     #endregion
@@ -103,8 +105,8 @@ namespace Contest2018
         public List<Round> rounds { get; set; }
         public bool GameFinished { get; set; }
         public int clickedRound { get; set; }
-  
-        public int CurrentPlayer = 0;//Следующий игрок(так получилось)!!!
+
+        public int FollowingPlayer = 1;
         public List<ObjectGame> gameobjects;
         public string st;
         public enum EFont
@@ -127,12 +129,13 @@ namespace Contest2018
             observationtower,
             playerr,
             playerl,
+            explosion,
         }
 
 
-        
+
         Random _rand;
-        
+
 
         GamePurpose _gameInstancePurpose;
         public Game2018(FormState settings, GamePurpose purpose)
@@ -203,18 +206,19 @@ namespace Contest2018
 
                 FontList.Load(EFont.main, "Times New Roman", 3.0, Color.FromArgb(193, 209, 255), FontStyle.Bold);
 
-                FontList.Load(EFont.player0, "Times New Roman", 15.0, Color.FromArgb(230,70,70), FontStyle.Bold);
+                FontList.Load(EFont.player0, "Times New Roman", 15.0, Color.FromArgb(230, 70, 70), FontStyle.Bold);
                 FontList.Load(EFont.player1, "Times New Roman", 3.0, Color.FromArgb(70, 230, 70), FontStyle.Bold);
 
-               SpriteList.Load(ESprite.tower, -90);
-               SpriteList.Load(ESprite.ballistal, -90);
-               SpriteList.Load(ESprite.ballistar, -90);
-               SpriteList.Load(ESprite.cannonl, -90);
-               SpriteList.Load(ESprite.cannonr, -90);
-               SpriteList.Load(ESprite.catapultl, -90);
-               SpriteList.Load(ESprite.catapultr, -90);
+                SpriteList.Load(ESprite.tower, -90);
+                SpriteList.Load(ESprite.ballistal, -90);
+                SpriteList.Load(ESprite.ballistar, -90);
+                SpriteList.Load(ESprite.cannonl, -90);
+                SpriteList.Load(ESprite.cannonr, -90);
+                SpriteList.Load(ESprite.catapultl, -90);
+                SpriteList.Load(ESprite.catapultr, -90);
                 SpriteList.Load(ESprite.observationtower, -90);
                 SpriteList.Load(ESprite.farm, -90);
+                SpriteList.Load(ESprite.explosion, defaultSizeExact: new Vector2d(50), defaultDepth: 10000, frameCountHorizontal: 6, frameCountVertical: 5);
             }
         }
 
@@ -239,13 +243,13 @@ namespace Contest2018
             }
             else
             {
-                st.AppendLine(player.hptower.ToString() + " " + player.gold.ToString() + " " +(17- player.pos).ToString());
-                st.AppendLine(players[(player.team + 1) % 2].hptower.ToString() + " " + players[(player.team + 1) % 2].gold.ToString() + " " +(17- players[(player.team + 1) % 2].pos).ToString());
+                st.AppendLine(player.hptower.ToString() + " " + player.gold.ToString() + " " + (17 - player.pos).ToString());
+                st.AppendLine(players[(player.team + 1) % 2].hptower.ToString() + " " + players[(player.team + 1) % 2].gold.ToString() + " " + (17 - players[(player.team + 1) % 2].pos).ToString());
             }
             //st.AppendLine(gameobjects.Count.ToString());
             int[] arrt = new int[18];
             int[] arrhp = new int[18];
-            for (int i=0;i<gameobjects.Count;i++)
+            for (int i = 0; i < gameobjects.Count; i++)
             {
                 arrt[gameobjects[i].pos] = (int)gameobjects[i].obj;
                 arrhp[gameobjects[i].pos] = (int)gameobjects[i].hp;
@@ -276,7 +280,7 @@ namespace Contest2018
             }
             else
             {
-                for (int i = 17; i >=0; i--)
+                for (int i = 17; i >= 0; i--)
                 {
                     st.Append(arrt[i].ToString() + " ");
                 }
@@ -288,7 +292,7 @@ namespace Contest2018
                 st.AppendLine("");
             }
             st.AppendLine(player.memory);
-            this.st= st.ToString();
+            this.st = st.ToString();
             return st.ToString(); ;
         }
 
@@ -298,33 +302,41 @@ namespace Contest2018
             {
                 shortStatus = executionResultRussianComment,
                 output = output,
-                colorOnTimeLine = player.team == 0 ? Color.DarkRed : Color.DarkGreen,            
+                colorOnTimeLine = player.team == 0 ? Color.DarkRed : Color.DarkGreen,
                 nameOnTimeLine = roundNumber.ToString(),
                 colorStatusOnTimeLine = Color.Gold,
                 input = roundNumber.ToString(),
             }; //todo now in interface just edit turn, no return
 
 
-
-
+            turn.player = new Player();
+            // turn.player = player;
+            turn.player.name = player.name;
+            turn.player.pos = player.pos;
+            turn.player.hptower = player.hptower;
+            turn.player.memory = player.memory;
+            turn.player.team = player.team;
+            turn.player.controlledByHuman = player.controlledByHuman;
+            turn.player.gold = player.gold;
+            turn.player.programAddress = player.programAddress;
             if (executionResult == ExecuteResult.Ok)
             {
                 var reader = new StringReader(output);
                 var s = reader.ReadLine().Split(' ');
                 try
                 {
-                   
-                    char ch=s[0][0];
+
+                    char ch = s[0][0];
                     int action = Convert.ToInt32(s[1]);
                     turn.pos = player.pos;
-                    if ((ch!='R' && ch != 'L' && ch!='S' )||(action<0 || action>6))
+                    if ((ch != 'R' && ch != 'L' && ch != 'S') || (action < 0 || action > 6))
                     {
                         throw new Exception();
                     }
                     else
                     {
-                        turn.player = player;
-                        if (player.pos==0  && ch=='L')
+
+                        if (player.pos == 0 && ch == 'L')
                         {
                             throw new Exception();
                         }
@@ -340,25 +352,26 @@ namespace Contest2018
                         {
                             throw new Exception();
                         }
-                        if (ch=='R')
-                        {
-                            if(player.team==1)
-                            {
-                                player.pos--;
-                            }
-                            else
-                            player.pos++;
-                        }
-                        if(ch=='L')
+                        turn.delta = 0;
+                        if (ch == 'R')
                         {
                             if (player.team == 1)
                             {
-                                player.pos++;
+                                turn.delta = -1;
                             }
                             else
-                                player.pos--;
+                                turn.delta = 1;
                         }
-                        turn.player = player;
+                        if (ch == 'L')
+                        {
+                            if (player.team == 1)
+                            {
+                                turn.delta = 1;
+                            }
+                            else
+                                turn.delta = -1;
+                        }
+                        turn.player.pos = turn.player.pos + turn.delta;
                         turn.action = action;
                     }
                 }
@@ -379,7 +392,7 @@ namespace Contest2018
                     }
                     else
                     {
-                        player.memory= null;
+                        player.memory = null;
                     }
                     return turn;
                 }
@@ -403,179 +416,199 @@ namespace Contest2018
 
         public List<Player> GetTurnOrderForNextRound()
         {
-            List<Player> l = new List<Player>();
-            l.Add(players[CurrentPlayer]);
-            return l;
+
+            /*List<Player> l = new List<Player>();
+            l.Add(players[FollowingPlayer]);
+            return l;*/
+            return players;
         }
 
 
         public void PreparationsBeforeRound()
         {
-            CurrentPlayer = (CurrentPlayer + 1) % 2;
-
+            //FollowingPlayer = (FollowingPlayer + 1) % 2;
         }
 
         Animator<int> animobject;
-        List<Animator<double>> animshells;
+        List<Animator<Vector2d>> animshells;
         Animator<int> animplayer0;
         Animator<int> animplayer1;
-        int buildpozision = -1;
+        ObjectGame obj;
         public static int Linear(int start, int finish, double stage)
         {
             var dif = finish - start;
+            if (dif == 0)
+            {
+                return start;
+            }
             return start + (int)(dif * stage);
+        }
+        public static Vector2d Parabol(Vector2d vecstart, Vector2d vecfinish, double stage)//ax^2+bx+c=y
+        {
+            double start = vecstart.X;
+            double finish = vecfinish.X;
+            double y = 332 - Math.Abs(finish - start) * 20 / 65;
+            double x = (finish + start) / 2;
+            double a = -(332 - y) / ((finish - x) * (start - x));
+            double b = (332 - y) / (finish - x) - (finish + x) * a;
+            double c = 332 - a * start * start - b * start;
+            double newx = start + (finish - start) * stage;
+            double newy = a * newx * newx + b * newx + c;
+            return new Vector2d(newx, newy);
         }
         public void ProcessRoundAndSetTotalStage(Round round)
         {
             // frame.Circle(Color.Green, 200 + 100 * round.turns[0].x + 50, 200 + 100 * round.turns[0].y + 50, 45);
             // anim = new Animator<Vector2d>(Animator.Linear,new Vector2d( 200 + 100 * round.turns[0].x + 50, 200 + 100 * round.turns[0].y + 50), new Vector2d(200 + 100 * round.turns[0].x + 50, 200 + 100 * round.turns[0].y + 50), 1);
             // animdb = new Animator<int>(Linear, 0, 255, 1);
-            gameobjects.RemoveAll(x => x.hp <= 0);
-            round.totalStage = 1;
-            animobject = null;
-            animshells = new List<Animator<double>>();
-            int currentplayer = round.turns[0].player.team; 
-
-            if (currentplayer == 0)
+            round.totalStage = 0;
+            if (round.turns[0].delta != 0 || round.turns[1].delta != 0)
+                round.totalStage = 1;
+            animshells = new List<Animator<Vector2d>>();
+            for(int i=0;i<gameobjects.Count;i++)
             {
-                animplayer0 = new Animator<int>(Linear, 65*round.turns[0].pos, 65* players[0].pos, 1);
-                animplayer1 = new Animator<int>(Linear, 65*players[1].pos, 65 * players[1].pos, 0);
+                gameobjects[i].isnew = false;
             }
-            else
+            for (int k = 0; k < 2; k++)
             {
-                 animplayer0 = new Animator<int>(Linear, 65 * players[0].pos, 65 * players[0].pos, 0);
-                animplayer1 = new Animator<int>(Linear, 65 * round.turns[0].pos, 65 * players[1].pos, 1);
-            }
-            if (round.turns[0].action != 0 && round.turns[0].action != 6)
-                gameobjects.RemoveAll((x) => x.pos == round.turns[0].player.pos);
-            buildpozision = -1;
-            switch (round.turns[0].action)
-            {
-                case 1:
-                    {
-                        if (players[currentplayer].gold >= 600 + roundNumber)
-                        {
-                            players[currentplayer].gold -= 600 + roundNumber;
-                            gameobjects.Add(new ObjectGame(TypeofObject.farm, 150, 0, 0, round.turns[0].player.pos));
-                            animobject = new Animator<int>(Linear, 0, 255, 1);
-                            buildpozision = round.turns[0].player.pos;
+                int currentplayer = round.turns[k].player.team;
+                players[currentplayer].pos = round.turns[k].player.pos;
+                if (currentplayer == 0)
+                {
+                    animplayer0 = new Animator<int>(Linear, 65 * round.turns[k].pos, 65 * players[0].pos, 1);
+                    // animplayer1 = new Animator<int>(Linear, 65*players[1].pos, 65 * players[1].pos, 0);
+                }
+                else
+                {
+                    //  animplayer0 = new Animator<int>(Linear, 65 * players[0].pos, 65 * players[0].pos, 0);
+                    animplayer1 = new Animator<int>(Linear, 65 * round.turns[k].pos, 65 * players[1].pos, 1);
+                }
 
-                        }
-                        break;
-                    }
-                case 2:
-                    {
-                        if (players[currentplayer].gold >= 200)
+                if (round.turns[k].action != 0 && round.turns[k].action != 6)
+                {
+                    gameobjects.RemoveAll((x) => x.pos == round.turns[k].player.pos);
+                    round.totalStage += 0.5;
+                    animobject = new Animator<int>(Linear, 0, 255, 0.5);
+                }
+                switch (round.turns[k].action)
+                {
+                    case 1:
                         {
-                            players[currentplayer].gold -= 200;
-                            gameobjects.Add(new ObjectGame(TypeofObject.observationtower, 200, 0, 0, round.turns[0].player.pos));
-                            animobject = new Animator<int>(Linear, 0, 255, 1);
-                            buildpozision = round.turns[0].player.pos;
-                        }
-                        break;
-                    }
-                case 3:
-                    {
-                        if (players[currentplayer].gold >= 1000 - 3 * roundNumber)
-                        {
-                            players[currentplayer].gold -= 1000 - 3 * roundNumber;
-                            gameobjects.Add(new ObjectGame(TypeofObject.catapult, 100, 8, 50, round.turns[0].player.pos));
-                            animobject = new Animator<int>(Linear, 0, 255, 1);
-                            buildpozision = round.turns[0].player.pos;
-                        }
-                        break;
-                    }
-                case 4:
-                    {
-                        if (players[currentplayer].gold >= 1800 - 5 * roundNumber)
-                        {
-                            players[currentplayer].gold -= 1800 - 5 * roundNumber;
-                            gameobjects.Add(new ObjectGame(TypeofObject.cannon, 175, 10, 75, round.turns[0].player.pos));
-                            animobject = new Animator<int>(Linear, 0, 255, 1);
-                            buildpozision = round.turns[0].player.pos;
-                        }
-                        break;
-                    }
-                case 5:
-                    {
-                        if (players[currentplayer].gold >= 1600 - 7 * roundNumber)
-                        {
-                            players[currentplayer].gold -= 1600 - 7 * roundNumber;
-                            gameobjects.Add(new ObjectGame(TypeofObject.ballista, 100, 12, 60, round.turns[0].player.pos));
-                            animobject = new Animator<int>(Linear, 0, 255, 1);
-                            buildpozision = round.turns[0].player.pos;
-                        }
-                        break;
-                    }
-                case 6:
-                    {
-                        animshells = new List<Animator<double>>();
-                        if (players[currentplayer].gold >= 400 && gameobjects.Find(x => x.obj == TypeofObject.observationtower && players[currentplayer].pos == x.pos) != null)
-                        {
-                            players[currentplayer].gold -= 400;
-                            for (int i = 0; i < gameobjects.Count; i++)
+                            if (players[currentplayer].gold >= 600 + roundNumber)
                             {
-                                double Purpose = -100;
-                                int r = _rand.Next(-1, 3);
-                                if (round.turns[0].player.team == 0 && gameobjects[i].pos < 9 && (int)gameobjects[i].obj > 2)
+                                players[currentplayer].gold -= 600 + roundNumber;
+                                gameobjects.Add(new ObjectGame(TypeofObject.farm, 150, 0, 0, round.turns[k].player.pos));
+                            }
+                            break;
+                        }
+                    case 2:
+                        {
+                            if (players[currentplayer].gold >= 200)
+                            {
+                                players[currentplayer].gold -= 200;
+                                gameobjects.Add(new ObjectGame(TypeofObject.observationtower, 200, 0, 0, round.turns[k].player.pos));
+                            }
+                            break;
+                        }
+                    case 3:
+                        {
+                            if (players[currentplayer].gold >= 1000 - 3 * roundNumber)
+                            {
+                                players[currentplayer].gold -= 1000 - 3 * roundNumber;
+                                gameobjects.Add(new ObjectGame(TypeofObject.catapult, 100, 8, 50, round.turns[k].player.pos));
+                            }
+                            break;
+                        }
+                    case 4:
+                        {
+                            if (players[currentplayer].gold >= 1800 - 5 * roundNumber)
+                            {
+                                players[currentplayer].gold -= 1800 - 5 * roundNumber;
+                                gameobjects.Add(new ObjectGame(TypeofObject.cannon, 175, 10, 75, round.turns[k].player.pos));
+                            }
+                            break;
+                        }
+                    case 5:
+                        {
+                            if (players[currentplayer].gold >= 1600 - 7 * roundNumber)
+                            {
+                                players[currentplayer].gold -= 1600 - 7 * roundNumber;
+                                gameobjects.Add(new ObjectGame(TypeofObject.ballista, 100, 12, 60, round.turns[k].player.pos));
+                            }
+                            break;
+                        }
+                    case 6:
+                        {
+                            animshells = new List<Animator<Vector2d>>();
+                            if (players[currentplayer].gold >= 400 && gameobjects.Find(x => x.obj == TypeofObject.observationtower && players[currentplayer].pos == x.pos) != null)
+                            {
+                                players[currentplayer].gold -= 400;
+                                round.totalStage += 1.3;
+                                for (int i = 0; i < gameobjects.Count; i++)
                                 {
-                                    double start = gameobjects[i].pos + 140 + 65 * gameobjects[i].pos;
-                                    animshells.Add(new Animator<double>(Animator.Linear, start, (start + 65 * gameobjects[i].distance < 1170 ? start + 65 * gameobjects[i].distance : 1170) + r % 2 * 65, 1));
-                                    Purpose = (gameobjects[i].pos + gameobjects[i].distance + r % 2 );
-                                }
-                                else
-                                {
-                                    if (round.turns[0].player.team == 1 && gameobjects[i].pos > 8 && (int)gameobjects[i].obj > 2)
+                                    double Purpose = -100;
+                                    int r = _rand.Next(-1, 3);
+                                    if (round.turns[k].player.team == 0 && gameobjects[i].pos < 9 && (int)gameobjects[i].obj > 2)
                                     {
                                         double start = gameobjects[i].pos + 140 + 65 * gameobjects[i].pos;
-                                        animshells.Add(new Animator<double>(Animator.Linear, start, (start - 65 * gameobjects[i].distance > 100 ? start - 65 * gameobjects[i].distance : 100) + r % 2 * 65,1));
-                                        Purpose = (gameobjects[i].pos - gameobjects[i].distance - r % 2);
-                                    }
-                                }
-                                if (Purpose != -100)
-                                {
-                                    if (Purpose < 0)
-                                    {
-                                        players[0].hptower -= gameobjects[i].damage;
+                                        animshells.Add(new Animator<Vector2d>(Parabol, new Vector2d(start, 332), new Vector2d((start + 65 * gameobjects[i].distance < 1270 ? start + 65 * gameobjects[i].distance : 1270) + r % 2 * 65, 332), 1));
+                                        Purpose = (gameobjects[i].pos + gameobjects[i].distance + r % 2);
                                     }
                                     else
                                     {
-                                        if (Purpose > 17)
+                                        if (round.turns[k].player.team == 1 && gameobjects[i].pos > 8 && (int)gameobjects[i].obj > 2)
                                         {
-                                            players[1].hptower -= gameobjects[i].damage;
+                                            double start = gameobjects[i].pos + 140 + 65 * gameobjects[i].pos;
+                                            animshells.Add(new Animator<Vector2d>(Parabol, new Vector2d(start, 332), new Vector2d((start - 65 * gameobjects[i].distance > 100 ? start - 65 * gameobjects[i].distance : 100) + r % 2 * 65, 332), 1));
+                                            Purpose = (gameobjects[i].pos - gameobjects[i].distance - r % 2);
+                                        }
+                                    }
+                                    if (Purpose != -100)
+                                    {
+                                        if (Purpose < 0)
+                                        {
+                                            players[0].hptower -= gameobjects[i].damage;
                                         }
                                         else
                                         {
-                                            for (int j = 0; j < gameobjects.Count; j++)
+                                            if (Purpose > 17)
                                             {
-                                                if (Purpose == gameobjects[j].pos)
+                                                players[1].hptower -= gameobjects[i].damage;
+                                            }
+                                            else
+                                            {
+                                                for (int j = 0; j < gameobjects.Count; j++)
                                                 {
-                                                    gameobjects[j].hp -= gameobjects[i].damage;
+                                                    if (Purpose == gameobjects[j].pos)
+                                                    {
+                                                        gameobjects[j].hp -= gameobjects[i].damage;
+                                                    }
                                                 }
                                             }
                                         }
                                     }
                                 }
                             }
+                            else
+                            {
+                                round.turns[k].action = 0;
+                            }
+                            break;
                         }
-                        else
-                        {
-                            round.turns[0].action = 0;
-                        }
-                        break;
-                    }
-            }
-            if (round.turns[0].action != 6)
-            {
-                for (int i = 0; i < gameobjects.Count; i++)
-                {
-                    if (gameobjects[i].obj == TypeofObject.farm && currentplayer == round.turns[0].player.team)
-                    {
-                        players[currentplayer].gold += 100;
-                    }
                 }
-                players[currentplayer].gold += 100;
+                if (round.turns[k].action != 6)
+                {
+                    for (int i = 0; i < gameobjects.Count; i++)
+                    {
+                        if (gameobjects[i].obj == TypeofObject.farm && Math.Abs(17 * currentplayer - gameobjects[i].pos) < 9)
+                        {
+                            players[currentplayer].gold += 100;
+                        }
+                    }
+                    players[currentplayer].gold += 100;
+                }
             }
+            gameobjects.RemoveAll(x => x.hp <= 0);
             if (roundNumber == _turnLimit || players[0].hptower * players[1].hptower <= 0)
             {
                 GameFinished = true;
@@ -590,7 +623,7 @@ namespace Contest2018
             frame.CameraViewport(1400, 1050);
 
             frame.PolygonWithDepth(Color.White, -100, new Rect2d(0, 0, 1400, 1050)); //todo line around polygon
-                                                                                    //frame.SpriteCorner(ESprite.brownGrunge, 0, -100, sizeOnlyHeight: frameHeight + 100);
+                                                                                     //frame.SpriteCorner(ESprite.brownGrunge, 0, -100, sizeOnlyHeight: frameHeight + 100);
 
             //todo nikita если щелкаем на первый квадратик, никакого process еще не произошло, а отрисовывать что то нужно. я пока написал, чтобы не вылетало, но это не выход:
             if (animshells == null)
@@ -619,76 +652,146 @@ namespace Contest2018
             frame.Polygon(Color.Black, new Rect2d(100, 365, 1170, 5));
             //frame.Circle(Color.Black, 60, 332, 40);
             //frame.Circle(Color.Black, 1310, 332, 40);
-            frame.SpriteCenter(ESprite.tower, 60, 332,angleDeg:90);
-            frame.SpriteCenter(ESprite.tower, 1310, 332, angleDeg: 90);
+            frame.SpriteCenter(ESprite.tower, 60, 324, angleDeg: 90);
+            frame.SpriteCenter(ESprite.tower, 1310, 324, angleDeg: 90);
             for (int i = 0; i < 19; i++)
             {
                 frame.Polygon(Color.Black, new Rect2d(100 + 65 * i, 300, 5, 65));
             }
-            if (animplayer0 != null )
+            if (animplayer0 != null)
             {
-                frame.SpriteCenter(ESprite.playerr, 132 + animplayer0.Get(stage), 430);
-                frame.SpriteCenter(ESprite.playerl, 132 + animplayer1.Get(stage), 430);
+                frame.SpriteCenter(ESprite.playerr, 132 + animplayer0.Get(stage > 1 ? 1 : stage), 430);
+                frame.SpriteCenter(ESprite.playerl, 132 + animplayer1.Get(stage > 1 ? 1 : stage), 430);
             }
             for (int i = 0; i < gameobjects.Count; i++)
             {
-                if(gameobjects[i].pos != buildpozision || stage>0.95)
-                switch ((int)gameobjects[i].obj)
+                if (!gameobjects[i].isnew)
+                    switch ((int)gameobjects[i].obj)
+                    {
+                        case 1:
+                            {
+                                frame.SpriteCenter(ESprite.farm, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
+                                break;
+                            }
+                        case 2:
+                            {
+                                frame.SpriteCenter(ESprite.observationtower, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
+                                break;
+                            }
+                        case 3:
+                            {
+                                if (gameobjects[i].pos < 9)
+                                {
+                                    frame.SpriteCenter(ESprite.catapultr, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
+                                }
+                                else
+                                {
+                                    frame.SpriteCenter(ESprite.catapultl, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
+                                }
+                                break;
+                            }
+                        case 4:
+                            {
+                                if (gameobjects[i].pos < 9)
+                                {
+                                    frame.SpriteCenter(ESprite.cannonr, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
+                                }
+                                else
+                                {
+                                    frame.SpriteCenter(ESprite.cannonl, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
+                                }
+                                break;
+                            }
+                        case 5:
+                            {
+                                if (gameobjects[i].pos < 9)
+                                {
+                                    frame.SpriteCenter(ESprite.ballistar, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
+                                }
+                                else
+                                {
+                                    frame.SpriteCenter(ESprite.ballistal, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
+                                }
+                                break;
+                            }
+                    }
+            }
+            double constage = 0;
+            if (totalStage == 1.5)
+            {
+                constage = stage - 1;
+            }
+            else
+            {
+                if (totalStage == 0.5)
                 {
-                    case 1:
-                        {
-                            frame.SpriteCenter(ESprite.farm, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
-                            break;
-                        }
-                    case 2:
-                        {
-                            frame.SpriteCenter(ESprite.observationtower, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
-                            break;
-                        }
-                    case 3:
-                        {
-                            if (gameobjects[i].pos < 9)
-                            {
-                                frame.SpriteCenter(ESprite.catapultr, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90,sizeOnlyHeight: 65, sizeOnlyWidth: 65);
-                            }
-                            else
-                            {
-                                frame.SpriteCenter(ESprite.catapultl, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
-                            }
-                            break;
-                        }
-                    case 4:
-                        {
-                            if (gameobjects[i].pos < 9)
-                            {
-                                frame.SpriteCenter(ESprite.cannonr, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
-                            }
-                            else
-                            {
-                                frame.SpriteCenter(ESprite.cannonl, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
-                            }
-                            break;
-                        }
-                    case 5:
-                        {
-                            if (gameobjects[i].pos < 9)
-                            {
-                                frame.SpriteCenter(ESprite.ballistar, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
-                            }
-                            else
-                            {
-                                frame.SpriteCenter(ESprite.ballistal, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
-                            }
-                            break;
-                        }
+                    constage = stage;
                 }
             }
+            if (totalStage == 1.5 && stage > 1 || totalStage == 0.5)
+                for (int i = 0; i < gameobjects.Count; i++)
+                    if (gameobjects[i].isnew)
+                    {
+                        switch ((int)gameobjects[i].obj)
+                        {
+                            case 1:
+                                {
+                                    frame.SpriteCenter(ESprite.farm, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    frame.SpriteCenter(ESprite.observationtower, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
+                                    break;
+                                }
+                            case 3:
+                                {
+                                    if (gameobjects[i].pos < 9)
+                                    {
+                                        frame.SpriteCenter(ESprite.catapultr, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
+                                    }
+                                    else
+                                    {
+                                        frame.SpriteCenter(ESprite.catapultl, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
+                                    }
+                                    break;
+                                }
+                            case 4:
+                                {
+                                    if (gameobjects[i].pos < 9)
+                                    {
+                                        frame.SpriteCenter(ESprite.cannonr, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
+                                    }
+                                    else
+                                    {
+                                        frame.SpriteCenter(ESprite.cannonl, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
+                                    }
+                                    break;
+                                }
+                            case 5:
+                                {
+                                    if (gameobjects[i].pos < 9)
+                                    {
+                                        frame.SpriteCenter(ESprite.ballistar, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
+                                    }
+                                    else
+                                    {
+                                        frame.SpriteCenter(ESprite.ballistal, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
+                                    }
+                                    break;
+                                }
+                        }
+                    }
             for (int i = 0; i < animshells.Count; i++)
             {
-                frame.Circle(Color.Black, animshells[i].Get(stage), 332, 10);
+                if (stage < 1)
+                    frame.Circle(Color.Black, animshells[i].Get(stage), 10);
+                else
+                    frame.SpriteCenter(ESprite.explosion, animshells[i].Get(stage), sizeExact: new Vector2d(100), frameNumber:
+                            (int)(((stage - 1) * 10) * 10).ToRange(0, 30));
             }
 
-            frame.TextCenter(EFont.player0, st, 300, 550);//вывод всего кода
+           // frame.TextCenter(EFont.player0, st, 300, 550);//вывод всего кода
 
 
             // }

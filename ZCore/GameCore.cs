@@ -620,7 +620,9 @@ namespace Framework
                 var tmp = _gameForm.InfoAction;
                 _gameForm.InfoAction = string.Format("Осуществляем переход...");
                 var game = _GameCreationDelegate(_settings[_currentGameNumber], GamePurpose.visualizationGame);
+
                 game.roundNumber = -1;
+
                 game.rounds = new List<TRound>();
 
                 while (!game.GameFinished && game.roundNumber + 1 < goBeforeRound)
