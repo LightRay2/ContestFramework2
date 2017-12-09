@@ -9,24 +9,46 @@ using System.Threading;
 
 namespace CSharpTemplate
 {
-    public class SolverD
+    public class SimpleGameEasy
     {
 
-        void Solve()
+        public class Point { public double x, y; }
+        void Go()
         {
-            //changle line in Program.cs to use this solver
-            //code here. use Read...() and Write(...,...,...)
+            //read
+
+            int time = ReadInt(), scoreWe = ReadInt(), scoreEnemy = ReadInt();
+
+            Point we = new Point { x = ReadDouble(), y = ReadDouble() };
+            Point enemy = new Point { x = ReadDouble(), y = ReadDouble() };
+            int ballcount = ReadInt();
+            var balls = new List<Point>();
+            for (int i = 0; i < ballcount; i++)
+            {
+                balls.Add(new Point { x = ReadDouble(), y = ReadDouble() });
+            }
+            Point aim = new Point { x = we.x, y = we.y };
+            if (balls.Count > 0)
+                aim = balls.OrderBy(ball => Dist(we, ball)).First();
+
+            Write(aim.x, aim.y);
 
         }
 
+
+        double Dist(Point one, Point two)
+        {
+            return Math.Sqrt((one.x - two.x) * (one.x - two.x) + (one.y - two.y) * (one.y - two.y));
+        }
 
 
         #region Main
 
         protected static TextReader reader;
         protected static TextWriter writer;
-        public static void Run()
+        public static string Run()
         {
+            var typeName = "_";
             if (Debugger.IsAttached)
             {
                 reader = new StreamReader("..\\..\\input.txt");
@@ -43,11 +65,28 @@ namespace CSharpTemplate
                 //writer = Console.Out;
                 writer = new StreamWriter("output.txt");
             }
-            
-            new SolverD().Solve();
-            
+            try
+            {
+                //var thread = new Thread(new Solver().Solve, 1024 * 1024 * 128);
+                //thread.Start();
+                //thread.Join();
+                var game = new SimpleGameEasy();
+                typeName = game.GetType().Name;
+                game.Go();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+#if DEBUG
+#else
+            throw;
+#endif
+            }
             reader.Close();
             writer.Close();
+
+            return typeName;
         }
 
         #endregion

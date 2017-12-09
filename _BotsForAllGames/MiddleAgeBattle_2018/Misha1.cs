@@ -75,7 +75,7 @@ namespace CSharpTemplate
 
         protected static TextReader reader;
         protected static TextWriter writer;
-        public static void Run()
+        public static string Run()
         {
             if (Debugger.IsAttached)
             {
@@ -94,10 +94,13 @@ namespace CSharpTemplate
                 writer = new StreamWriter("output.txt");
             }
 
-            new Misha1().Solve();
+            var game = new Misha1();
+            game.Solve();
 
             reader.Close();
             writer.Close();
+
+            return game.GetType().Name;
         }
 
         #endregion

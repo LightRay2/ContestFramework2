@@ -9,111 +9,80 @@ using System.Threading;
 
 namespace CSharpTemplate
 {
-    public class SolverB
+    public class SimpleGameNormal
     {
-        class Elem
-        {
-            public int type;
-            public int pos;
-            public int hp;
-            public Elem()
-            {
 
-            }
-        }
-        void Solve()
+        public class Point { public double x, y; }
+        void Go()
         {
-            //changle line in Program.cs to use this solver
-            //code here. use Read...() and Write(...,...,...)
-            List<Elem> a = new List<Elem>();
-            int n = ReadInt();
-            int hp = ReadInt();
-            int g = ReadInt();
-            int pos = ReadInt();
-            int[] ddd = ReadIntArray();
-            int count = 0;
-            for (int i = 0; i < 18; i++)
-            {
+            //read
 
-                int a1 = ReadInt();
-                if(a1!=0)
-                {
-                    count++;
-                    a.Add(new Elem());
-                    a[count - 1].pos = i;
-                    a[count - 1].type = a1;
-                }
-            }
-            count = 0;
-            for (int i = 0; i < 18; i++)
+            int time = ReadInt(), scoreWe = ReadInt(), scoreEnemy = ReadInt();
+
+            Point we = new Point { x = ReadDouble(), y = ReadDouble() };
+            Point enemy = new Point { x = ReadDouble(), y = ReadDouble() };
+            int ballcount = ReadInt();
+            var balls = new List<Point>();
+            for (int i = 0; i < ballcount; i++)
             {
-                int a1 = ReadInt();
-                if(a1!=0)
-                {
-                    count++;
-                    a[count - 1].hp = hp;
-                }
+                balls.Add(new Point { x = ReadDouble(), y = ReadDouble() });
             }
-            if (n < 30 )
+            Point aim = new Point { x = we.x, y = we.y };
+
+
+
+
+            if (ballcount < 4)
             {
-                if(g>600 && pos<3)                
-                {
-                    Write('R', 1);
-                }
-                else
-                {
-                    Write('S', 0);
-                }
+                if (ballcount > 0)
+                    aim = balls.OrderBy(ball => Dist(we, ball)).First();
+
             }
             else
-            { 
+            {
+                int bestone = 0, besttwo = 1, bestthree = 2;
+                double bestDist = double.MaxValue;
+                //  double bestToCenter = double.MaxValue;
+                for (int one = 0; one < balls.Count; one++)
+                {
+                    for (int two = 0; two < balls.Count; two++)
+                    {
+                        for (int three = 0; three < balls.Count; three++)
+                        {
+                            for (int four = 0; four < balls.Count; four++)
+                            {
+                                var list = new List<int> { one, two, three, four };
+                                if (list.Count != list.Distinct().Count())
+                                    continue;
 
-                    if (n < 38)
-                        Write('R', 3 + n % 3);
-                    else {
-                    if(n<40)
-                    {
-                        Write('R', 0);
-                    }
-                    else
-                    {
-                        int k = -1;
-                        for (int i = 0; i < count; i++)
-                        {
-                            if (a[i].type == 2 && a[i].pos < 9)
-                            {
-                                k = a[i].pos;
-                                break;
-                            }
-                        }
-                        if (k == -1)
-                        {
-                            Write('S', 2);
-                        }
-                        else
-                        {
-                            if (k > pos)
-                            {
-                                Write('R', 0);
-                            }
-                            else
-                            {
-                                if (k < pos)
+                                double curDist = Dist(we, balls[one]) + Dist(balls[one], balls[two]) + Dist(balls[two], balls[three]) + Dist(balls[three], balls[four]);
+                                //    if(Math.Abs(curDist - bestDist ) < 0.000001)
+                                // {
+                                //      if(Dist)
+                                //  }
+                                if (curDist < bestDist)
                                 {
-                                    Write('L', 0);
-                                }
-                                else
-                                {
-                                    Write('S', 6);
+                                    bestone = one;
+                                    bestDist = curDist;
                                 }
                             }
                         }
-
                     }
                 }
+
+                aim = balls[bestone];
+
             }
+
+            Write(aim.x, aim.y);
+
         }
 
+
+        double Dist(Point one, Point two)
+        {
+            return Math.Sqrt((one.x - two.x) * (one.x - two.x) + (one.y - two.y) * (one.y - two.y));
+        }
 
 
         #region Main
@@ -122,6 +91,7 @@ namespace CSharpTemplate
         protected static TextWriter writer;
         public static string Run()
         {
+            var typeName = "_";
             if (Debugger.IsAttached)
             {
                 reader = new StreamReader("..\\..\\input.txt");
@@ -138,15 +108,26 @@ namespace CSharpTemplate
                 //writer = Console.Out;
                 writer = new StreamWriter("output.txt");
             }
-
-
-            var game = new SolverB();
-            game.Solve();
-
+            try
+            {
+                //var thread = new Thread(new Solver().Solve, 1024 * 1024 * 128);
+                //thread.Start();
+                //thread.Join();
+                var game = new SimpleGameNormal();
+                typeName = game.GetType().Name;
+                game.Go();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+#if DEBUG
+#else
+            throw;
+#endif
+            }
             reader.Close();
             writer.Close();
-
-            return game.GetType().Name;
+            return typeName;
         }
 
         #endregion
