@@ -18,9 +18,9 @@ namespace CSharpTemplate
             #endregion
 
             //var typeName = SolverA.Run();
-            //var typeName = SolverB.Run();
+            var typeName = SolverB.Run();
             //var typeName = Misha1.Run();
-            var typeName = Misha2.Run();
+           // var typeName = Misha2.Run();
 
             
 
