@@ -214,9 +214,9 @@ namespace SimpleContest
                 SpriteList.Load(ESprite.man1, -90);
             }
         }
-        public string GetCurrentSituation()
+        public List<string> GetCurrentSituation()
         {
-            return null;
+            return players.Select(x => x.score.ToString()).ToList();
 
         }
 

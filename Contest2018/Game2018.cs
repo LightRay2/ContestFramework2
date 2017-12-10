@@ -223,7 +223,7 @@ namespace Contest2018
         }
 
 
-        public string GetCurrentSituation()
+        public List<string> GetCurrentSituation()
         {
             return null;
 

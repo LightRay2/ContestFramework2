@@ -26,7 +26,7 @@ namespace Framework
         string GetInputFile(TPlayer player);
         TTurn TryGetHumanTurn(TPlayer player, GlInput input);
         TTurn GetProgramTurn(TPlayer player, string output, ExecuteResult executionResult, string executionResultRussianComment);
-        string GetCurrentSituation();
+        List<string> GetCurrentSituation();
     }
 
     public interface IParamsFromStartForm
