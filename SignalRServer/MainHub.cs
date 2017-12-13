@@ -5,39 +5,30 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace SignalRServer
 {
     public class MainHub : Hub
     {
-        ServerPlayer Player { get { return Manager.e.connectedParticipants.TryGetValue(Context.ConnectionId, out ServerPlayer res) ? res : (ServerPlayer)null; } }
-
+        DB db = State.e.CreateDb();
+        const string GAME_RUNNER_PASSWORD = "qazASD890";
         public static object LOCKER = new object();
-        //data
-        //player unique name,password, player exe or java or py (or null)
-        //results of matches -time, names, scores as string(default parsing to int), json data for replay if bool
-        //on server:
+
         public string ConnectAsParticipant(string name, string password)
         {
             lock (LOCKER)
             {
-                if( password == ServerState.GameRunnerPassword)
+                if( password == GAME_RUNNER_PASSWORD)
                 {
-                    Manager.e.connectedGameRunners.Add(Context.ConnectionId);
+                    State.e.connectedGameRunners.Add(Context.ConnectionId);
                     return null;
                 }
-                var player = ServerState.e.Players.FirstOrDefault(x => x.uniqueName == name && x.password == password);
+                var player = db.Player.FirstOrDefault(x => x.Name == name && x.Password == password);
                 if (player == null)
                     return "wrong name or password";
-                Manager.e.connectedParticipants[Context.ConnectionId] = player;
+                State.e.connectedParticipants[Context.ConnectionId] = player.Id;
                 return null;
-            }
-        }
-        public void GamePlayed(string jsonInfo)
-        {
-            lock (LOCKER)
-            {
-
             }
         }
 
@@ -45,7 +36,7 @@ namespace SignalRServer
         {
             lock(LOCKER)
             {
-                return Tuple.Create( ServerState.e.Games.Select(x => Tuple.Create(x.id, x.dateTime, x.playersAndScores.Select(y => Tuple.Create(y.Item1.uniqueName, y.Item2)).ToList())).ToList(), "");
+                return Tuple.Create( db.Game.ToList().Select(x => Tuple.Create(x.Id, x.DateTime, x.GamePlayer.Select(y => Tuple.Create(y.Player.Name, y.Result)).ToList())).ToList(), "");
 
             }
         }
@@ -54,18 +45,18 @@ namespace SignalRServer
         {
             lock (LOCKER)
             {
-                return Tuple.Create(ServerState.e.CurrentState, "");
+                return Tuple.Create(State.e.CurrentState, "");
             }
         }
         public Tuple<string,string> GetGame(Guid guid)
         {
             lock (LOCKER)
             {
-                var game = ServerState.e.Games.FirstOrDefault(g => g.id == guid);
+                var game = db.Game.Find(guid);
                 if (game == null)
                     return Tuple.Create("", "game not found");
                 else
-                    return Tuple.Create(game.JsonData, "");
+                    return Tuple.Create(game.Content, "");
             }
         }
 
@@ -74,14 +65,14 @@ namespace SignalRServer
         {
             lock (LOCKER)
             {
-                if (Manager.e.connectedGameRunners.Contains(Context.ConnectionId) && ServerState.e.Players.Count(x => x.lastProgramRelativePathOrNull != null) >= 2) //todo 2?
+                if (State.e.connectedGameRunners.Contains(Context.ConnectionId) && db.Player.Count(x => x.Solution != null) >= 2) //todo 2?
                 {
                     var guid = Guid.NewGuid();
-                    var players = ServerState.e.Players.Where(p=>p.lastProgramRelativePathOrNull!=null).ToList();
+                    var players = db.Player.Where(p=>p.Solution != null).ToList();
                     var one = players[ new Random().Next(players.Count)];
                     players.Remove(one);
                     var two = players[new Random().Next(players.Count)];
-                    Manager.e.RunningGames.TryAdd(guid, new List<ServerPlayer> { one, two });
+                    State.e.RunningGames.TryAdd(guid, new List<Guid> { one.Id, two.Id });
                     return Tuple.Create(guid, "");
                 }
                 return Tuple.Create(Guid.Empty,"game runner not found");
@@ -92,7 +83,7 @@ namespace SignalRServer
         {
             lock (LOCKER)
             {
-                return Tuple.Create(Manager.e.RunningGames[gameId].Count, "");
+                return Tuple.Create(State.e.RunningGames[gameId].Count, "");
             }
         }
 
@@ -100,8 +91,9 @@ namespace SignalRServer
         {
             lock (LOCKER)
             {
-                var list = Manager.e.RunningGames[gameId];
-                return Tuple.Create(Tuple.Create( list[playerNumber].uniqueName + Path.GetExtension( list[playerNumber].lastProgramRelativePathOrNull), File.ReadAllBytes(list[playerNumber].AbsolutePath)),"");  
+                var list = State.e.RunningGames[gameId];
+                var player = db.Player.Find(list[playerNumber]);
+                return Tuple.Create(Tuple.Create( player.Name + player.SolutionExtension, player.Solution),"");  
             }
         }
 
@@ -109,65 +101,32 @@ namespace SignalRServer
         {
             lock (LOCKER)
             {
-                var players = Manager.e.RunningGames[gameId];
-                var playersAndScores = new List<Tuple<ServerPlayer, string>>();
+                var players =  State.e.RunningGames[gameId].Select(id=>db.Player.Find(id)).ToList();
+                var game = new Game { DateTime = DateTime.Now, Content = xmlData };
                 for(int i = 0; i < players.Count; i++)
                 {
-                    playersAndScores.Add(Tuple.Create(players[i], gameResult[i]));
+                    players[i].GamePlayer.Add(new GamePlayer { Game = game, Result = gameResult[i] });
                 }
-                var game = new ServerGame(playersAndScores, xmlData);
-                ServerState.e.Games.Add(game);
-                ServerState.e.CurrentState = Guid.NewGuid();
+                State.e.CurrentState = Guid.NewGuid();
+                db.SaveChanges();
                 return "";
             }
-            //todo all cliens  - Refresh 
-            //AND in connect as participant
         }
 
-        #region file upload
-        public Tuple<Guid, string> StartUploadingAndGetId(string fileName, int partCount)
+        public string SubmitSolution(string solutionExtension, byte[] solution)
         {
-            if (Player == null)
-                return Tuple.Create(default(Guid), "not authorized");
-
-            var uploadingFileInfo = new UploadingFileInfo(partCount) { fileName = fileName };
-            var guid = Guid.NewGuid();
-            Manager.e.uploadingFiles.TryAdd(guid, uploadingFileInfo);
-            return Tuple.Create(guid, "");
-        }
-        static object _locker = new object();
-        public string LoadFilePart(Guid id, int partNumber, byte[] filePart)
-        {
-            if (Player == null)
-                return "not authorized";
-
-            lock (_locker)
+            lock (LOCKER)
             {
-                if (Manager.e.uploadingFiles.ContainsKey(id))
-                {
-                    var file = Manager.e.uploadingFiles[id];
-
-                    bool finished = file.AddPartAndCheckFinish(filePart, partNumber);
-
-                    if (finished)
-                    {
-                        string relative = $"{id}{file.fileName}";
-                        string filePhysicalName = ServerState.FolderExecutablesWithSlash + relative;
-                        File.WriteAllBytes(filePhysicalName, file.bytes.SelectMany(x => x).ToArray());
-                        Player.programSent = DateTime.Now;
-                        Player.lastProgramRelativePathOrNull = relative;
-                        ServerState.e.SaveChanges();//now cross thread bad
-                    }
-                    return null;
-                }
-                else
-                {
-                    return "error uploading file. try again";
-                }
+                var player = db.Player.Find(State.e.connectedParticipants[Context.ConnectionId]);
+                if (player == null)
+                    return "not authorized";
+                player.Solution = solution;
+                player.SolutionExtension = solutionExtension;
+                player.SolutionSubmitDateTime = DateTime.Now;
+                db.SaveChanges();
+                return "";
             }
-
         }
-
-        #endregion
+        
     }
 }

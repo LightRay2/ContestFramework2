@@ -354,19 +354,19 @@ C:\Program Files\Java\jre1.8.0_73 )";
                 for (int i = 0; i < scores.Count; i++)
                 {
                     {
-                        var label = new Label();
+                        var label = new Label { AutoSize = true };
                         label.Location = new Point(labelServerTeams.Location.X, starty + dy * i);
                         label.Text = " "+ scores[i].Item1;
                         labelServerTeams.Parent.Controls.Add(label);
                     }
                     {
-                        var label = new Label();
+                        var label = new Label { AutoSize = true };
                         label.Location = new Point(labelServerGameCount.Location.X, starty + dy * i);
                         label.Text = " " + scores[i].Item2.ToString();
                         labelServerTeams.Parent.Controls.Add(label);
                     }
                     {
-                        var label = new Label();
+                        var label = new Label { AutoSize = true };
                         label.Location = new Point(labelServerPlayerScore.Location.X, starty + dy * i);
                         label.Text = " " + scores[i].Item3.ToString();
                         labelServerTeams.Parent.Controls.Add(label);
@@ -383,13 +383,13 @@ C:\Program Files\Java\jre1.8.0_73 )";
                 for (int i = 0; i < games.Count; i++)
                 {
                     {
-                        var label = new Label();
+                        var label = new Label { AutoSize = true };
                         label.Location = new Point(labelServerGameTime.Location.X, starty + dy * i);
                         label.Text = games[i].Item2.ToString("HH:mm");
                         labelServerGameTime.Parent.Controls.Add(label);
                     }
                     {
-                        var label = new Label();
+                        var label = new Label { AutoSize = true };
                         label.Location = new Point(labelServerGamePlayersAndResults.Location.X, starty + dy * i);
                         label.Text = " " + string.Join(" ", games[i].Item3.Select(x=>$"{x.Item1}({x.Item2})"));
                         labelServerGameTime.Parent.Controls.Add(label);
@@ -451,29 +451,33 @@ C:\Program Files\Java\jre1.8.0_73 )";
 
             if (File.Exists(path))
             {
-                int currentFilePart = 0;
                 var allBytes = File.ReadAllBytes(path);
-                int partCount = (int)Math.Ceiling((double)allBytes.Length / PART_SIZE - 0.000000000001);
-                var currentFile = new byte[partCount][];
-                for (int i = 0; i < allBytes.Length; i += PART_SIZE)
-                {
-                    int partNumber = i / PART_SIZE;
-                    int size = Math.Min(PART_SIZE, allBytes.Length - i);
-                    currentFile[partNumber] = new byte[size];
-                    Array.Copy(allBytes, i, currentFile[partNumber], 0, size);
+                call.CallVoid("SubmitSolution", "start submit solution", "finish submit solution", Path.GetExtension(path), allBytes);
 
-                }
 
-                Guid fileId = call.Call<Guid>("StartUploadingAndGetId", "start send exe", "file id got", Guid.Empty, Path.GetFileName(path), partCount);
-                if (fileId == Guid.Empty)
-                    return;
-                //todo parallel for?
-                for (int i = 0; i < partCount; i++)
-                {
-                    bool success = call.CallVoid("LoadFilePart", $"start upload {i + 1} of {partCount}", "finish upload", fileId, i, currentFile[i]);
-                    if (!success)
-                        break;
-                }
+                    //то, что закомментировано - передача большого файла по частям
+
+                //int partCount = (int)Math.Ceiling((double)allBytes.Length / PART_SIZE - 0.000000000001);
+                //var currentFile = new byte[partCount][];
+                //for (int i = 0; i < allBytes.Length; i += PART_SIZE)
+                //{
+                //    int partNumber = i / PART_SIZE;
+                //    int size = Math.Min(PART_SIZE, allBytes.Length - i);
+                //    currentFile[partNumber] = new byte[size];
+                //    Array.Copy(allBytes, i, currentFile[partNumber], 0, size);
+
+                //}
+
+                //Guid fileId = call.Call<Guid>("StartUploadingAndGetId", "start send exe", "file id got", Guid.Empty, Path.GetFileName(path), partCount);
+                //if (fileId == Guid.Empty)
+                //    return;
+                ////todo parallel for?
+                //for (int i = 0; i < partCount; i++)
+                //{
+                //    bool success = call.CallVoid("LoadFilePart", $"start upload {i + 1} of {partCount}", "finish upload", fileId, i, currentFile[i]);
+                //    if (!success)
+                //        break;
+                //}
 
 
             }
@@ -542,6 +546,7 @@ C:\Program Files\Java\jre1.8.0_73 )";
                     if (gameResultOrNull == null)
                     {
                         serverInfo.activateServerMode = false;
+                        needRefreshControls = true;
                     }
                     else
                     {

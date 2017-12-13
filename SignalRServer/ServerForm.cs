@@ -30,44 +30,62 @@ namespace SignalRServer
             string url = "http://localhost:8080";
             WebApp.Start(url);
             labelServerAddress.Text = $"Адрес сервера: {url}";
+
+
+            //DB db = new DB();
+            //db.SaveChanges();
+
+            try
+            {
+                var db = State.e.CreateDb();
+                if (db.Player.Count() == 0)
+                {
+                    db.Player.Add(new Player { Name = "one", Password = "one" });
+                    db.Player.Add(new Player { Name = "two", Password = "two" });
+                    db.SaveChanges();
+                }
+            }
+            catch(Exception ex)
+            {
+                //возможно , помогут две закомментированные строки сверху (создают пустую базу на диске С) или экземплр пустой базы в корне солюшна
+                throw;
+            }
+
             _timer.Tick += _timer_Tick;
             _timer.Start();
-            _timer_Tick(null,null);
-            //using (WebApp.Start(url))
-            //{
-            //   this.Text = $"Server running on {url}";
-            //}
+            _timer_Tick(null, null);
         }
 
         private void _timer_Tick(object sender, EventArgs e)
         {
             lock(MainHub.LOCKER)
             {
+                var db = State.e.CreateDb();
                 {
                     var sb = new StringBuilder();
-                    var users = ServerState.e.Players.Where(x => x.lastProgramRelativePathOrNull != null).OrderByDescending(x=>x.programSent).ToList();
+                    var users =  db.Player.Where(x => x.Solution != null).OrderByDescending(x=>x.SolutionSubmitDateTime).ToList();
                     sb.AppendLine($"Пользователи, отправившие решение ({users.Count}):");
 
                     for (int i = 0; i < users.Count; i++)
                     {
-                        var time = users[i].programSent.ToString("HH:mm");
-                        sb.AppendLine($"{time}. {users[i].uniqueName} ({Path.GetExtension(users[i].lastProgramRelativePathOrNull)})");
+                        var time = users[i].SolutionSubmitDateTime.ToString("HH:mm");
+                        sb.AppendLine($"{time}. {users[i].Name} ({users[i].SolutionExtension})");
                     }
                     labelPlayersSentExe.Text = sb.ToString();
                 }
                 {
                     var sb = new StringBuilder();
-                    var users = Manager.e.connectedParticipants.Select(x=>x.Value).ToList();
+                    var users =  State.e.connectedParticipants.Select(x=> db.Player.Find(x.Value)).OrderBy(x=>x.Name).ToList();
                     sb.AppendLine($"Пользователи online ({users.Count}):");
                     for (int i = 0; i < users.Count; i++)
                     {
 
-                        sb.AppendLine($"{i}. {users[i].uniqueName}");
+                        sb.AppendLine($"{users[i].Name}");
                     }
                     label1.Text = sb.ToString();
                 }
 
-                labelCountOfGameRunners.Text = $"Количество серверов для запуска игр: {Manager.e.connectedGameRunners.Count}";
+                labelCountOfGameRunners.Text = $"Количество серверов для запуска игр: {State.e.connectedGameRunners.Count}";
             }
         }
     }

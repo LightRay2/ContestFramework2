@@ -89,6 +89,7 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.refreshTimer = new System.Windows.Forms.Timer(this.components);
+            this.labelStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.tabControl1.SuspendLayout();
             this.tabLocalGames.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -110,6 +111,7 @@
             this.panel4.SuspendLayout();
             this.tabHelp.SuspendLayout();
             this.panel3.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -562,7 +564,7 @@
             // 
             this.labelServerGamePlayersAndResults.AutoSize = true;
             this.labelServerGamePlayersAndResults.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelServerGamePlayersAndResults.Location = new System.Drawing.Point(109, 44);
+            this.labelServerGamePlayersAndResults.Location = new System.Drawing.Point(104, 44);
             this.labelServerGamePlayersAndResults.Name = "labelServerGamePlayersAndResults";
             this.labelServerGamePlayersAndResults.Size = new System.Drawing.Size(188, 18);
             this.labelServerGamePlayersAndResults.TabIndex = 15;
@@ -714,11 +716,13 @@
             // 
             // statusStrip1
             // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.labelStatus});
             this.statusStrip1.Location = new System.Drawing.Point(0, 549);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(906, 22);
             this.statusStrip1.TabIndex = 1;
-            this.statusStrip1.Text = "statusStrip1";
+            this.statusStrip1.Text = "k,kj,k,jk";
             // 
             // openFileDialog1
             // 
@@ -727,6 +731,13 @@
             // refreshTimer
             // 
             this.refreshTimer.Interval = 16;
+            // 
+            // labelStatus
+            // 
+            this.labelStatus.Name = "labelStatus";
+            this.labelStatus.Size = new System.Drawing.Size(140, 17);
+            this.labelStatus.Text = "labelStatus (visible=false)";
+            this.labelStatus.Visible = false;
             // 
             // StartForm
             // 
@@ -768,6 +779,8 @@
             this.tabHelp.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -834,5 +847,6 @@
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.CheckBox edtServerActivateGameRunnerForServer;
         private System.Windows.Forms.Button btnServerWatchGame;
+        private System.Windows.Forms.ToolStripStatusLabel labelStatus;
     }
 }

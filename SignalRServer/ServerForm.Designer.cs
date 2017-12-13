@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ServerForm));
             this.labelServerAddress = new System.Windows.Forms.Label();
             this.labelPlayersSentExe = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -35,8 +36,10 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabInfo = new System.Windows.Forms.TabPage();
             this.tabMode = new System.Windows.Forms.TabPage();
+            this.label2 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabInfo.SuspendLayout();
+            this.tabMode.SuspendLayout();
             this.SuspendLayout();
             // 
             // labelServerAddress
@@ -114,12 +117,22 @@
             // 
             this.tabMode.AutoScroll = true;
             this.tabMode.BackColor = System.Drawing.SystemColors.Control;
+            this.tabMode.Controls.Add(this.label2);
             this.tabMode.Location = new System.Drawing.Point(4, 29);
             this.tabMode.Name = "tabMode";
             this.tabMode.Padding = new System.Windows.Forms.Padding(3);
             this.tabMode.Size = new System.Drawing.Size(1036, 610);
             this.tabMode.TabIndex = 1;
             this.tabMode.Text = "Режим работы";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(20, 22);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(763, 60);
+            this.label2.TabIndex = 0;
+            this.label2.Text = resources.GetString("label2.Text");
             // 
             // ServerForm
             // 
@@ -135,6 +148,8 @@
             this.tabControl1.ResumeLayout(false);
             this.tabInfo.ResumeLayout(false);
             this.tabInfo.PerformLayout();
+            this.tabMode.ResumeLayout(false);
+            this.tabMode.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -148,6 +163,7 @@
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabInfo;
         private System.Windows.Forms.TabPage tabMode;
+        private System.Windows.Forms.Label label2;
     }
 }
 
