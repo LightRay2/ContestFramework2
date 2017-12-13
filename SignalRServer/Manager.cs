@@ -11,12 +11,15 @@ namespace SignalRServer
     {
         static Manager _e;
         public static Manager e { get { if (_e == null) _e = new Manager(); return _e; } }
+        
+
         /// <summary>
         /// connection id, player
         /// </summary>
         public ConcurrentDictionary<string, ServerPlayer> connectedParticipants = new ConcurrentDictionary<string, ServerPlayer>();
         public ConcurrentBag<string> connectedGameRunners = new ConcurrentBag<string>();
         public ConcurrentDictionary<Guid, UploadingFileInfo> uploadingFiles = new ConcurrentDictionary<Guid, UploadingFileInfo>();
+        public ConcurrentDictionary<Guid, List<ServerPlayer>> RunningGames = new ConcurrentDictionary<Guid, List<ServerPlayer>>();
     }
     public class GameRunner
     {

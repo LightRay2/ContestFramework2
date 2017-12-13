@@ -69,6 +69,7 @@
             this.labelServerTeams = new System.Windows.Forms.Label();
             this.tabServerReplays = new System.Windows.Forms.TabPage();
             this.panel9 = new System.Windows.Forms.Panel();
+            this.btnServerWatchGame = new System.Windows.Forms.Button();
             this.labelServerGamePlayersAndResults = new System.Windows.Forms.Label();
             this.labelServerGameTime = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
@@ -88,7 +89,6 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.refreshTimer = new System.Windows.Forms.Timer(this.components);
-            this.btnServerWatchGame = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabLocalGames.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -235,7 +235,7 @@
             // btnChangeOrder
             // 
             this.btnChangeOrder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnChangeOrder.Location = new System.Drawing.Point(179, 166);
+            this.btnChangeOrder.Location = new System.Drawing.Point(195, 166);
             this.btnChangeOrder.Name = "btnChangeOrder";
             this.btnChangeOrder.Size = new System.Drawing.Size(192, 35);
             this.btnChangeOrder.TabIndex = 4;
@@ -247,7 +247,7 @@
             // 
             this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.panel2.Controls.Add(this.btnRun);
-            this.panel2.Location = new System.Drawing.Point(318, 419);
+            this.panel2.Location = new System.Drawing.Point(310, 419);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(248, 69);
             this.panel2.TabIndex = 3;
@@ -276,7 +276,7 @@
             // btnClearSelection
             // 
             this.btnClearSelection.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClearSelection.Location = new System.Drawing.Point(377, 166);
+            this.btnClearSelection.Location = new System.Drawing.Point(393, 166);
             this.btnClearSelection.Name = "btnClearSelection";
             this.btnClearSelection.Size = new System.Drawing.Size(189, 35);
             this.btnClearSelection.TabIndex = 5;
@@ -548,6 +548,16 @@
             this.panel9.Size = new System.Drawing.Size(878, 475);
             this.panel9.TabIndex = 2;
             // 
+            // btnServerWatchGame
+            // 
+            this.btnServerWatchGame.Location = new System.Drawing.Point(736, 44);
+            this.btnServerWatchGame.Name = "btnServerWatchGame";
+            this.btnServerWatchGame.Size = new System.Drawing.Size(127, 32);
+            this.btnServerWatchGame.TabIndex = 16;
+            this.btnServerWatchGame.Text = "Смотреть!";
+            this.btnServerWatchGame.UseVisualStyleBackColor = true;
+            this.btnServerWatchGame.Visible = false;
+            // 
             // labelServerGamePlayersAndResults
             // 
             this.labelServerGamePlayersAndResults.AutoSize = true;
@@ -580,10 +590,10 @@
             // tabServerGameRunner
             // 
             this.tabServerGameRunner.Controls.Add(this.panel4);
-            this.tabServerGameRunner.Location = new System.Drawing.Point(4, 27);
+            this.tabServerGameRunner.Location = new System.Drawing.Point(4, 22);
             this.tabServerGameRunner.Name = "tabServerGameRunner";
             this.tabServerGameRunner.Padding = new System.Windows.Forms.Padding(3);
-            this.tabServerGameRunner.Size = new System.Drawing.Size(884, 481);
+            this.tabServerGameRunner.Size = new System.Drawing.Size(884, 486);
             this.tabServerGameRunner.TabIndex = 3;
             this.tabServerGameRunner.Text = "Режим сервера";
             this.tabServerGameRunner.UseVisualStyleBackColor = true;
@@ -595,7 +605,7 @@
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel4.Location = new System.Drawing.Point(3, 3);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(878, 475);
+            this.panel4.Size = new System.Drawing.Size(878, 480);
             this.panel4.TabIndex = 1;
             // 
             // edtServerActivateGameRunnerForServer
@@ -717,16 +727,6 @@
             // refreshTimer
             // 
             this.refreshTimer.Interval = 16;
-            // 
-            // btnServerWatchGame
-            // 
-            this.btnServerWatchGame.Location = new System.Drawing.Point(767, 44);
-            this.btnServerWatchGame.Name = "btnServerWatchGame";
-            this.btnServerWatchGame.Size = new System.Drawing.Size(96, 32);
-            this.btnServerWatchGame.TabIndex = 16;
-            this.btnServerWatchGame.Text = "Смотреть!";
-            this.btnServerWatchGame.UseVisualStyleBackColor = true;
-            this.btnServerWatchGame.Visible = false;
             // 
             // StartForm
             // 

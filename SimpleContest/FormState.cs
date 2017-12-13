@@ -23,9 +23,9 @@ namespace SimpleContest
         /// </summary>
         public FormState()
         {
-            if (legalCreation == false)
-                throw new Exception("Используйте для создания LoadOrCreate");
-            legalCreation = false;
+            //if (legalCreation == false)
+            //    throw new Exception("Используйте для создания LoadOrCreate");
+            //legalCreation = false;
         }
         public static FormState LoadOrCreate()
         {

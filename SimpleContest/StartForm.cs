@@ -349,26 +349,26 @@ C:\Program Files\Java\jre1.8.0_73 )";
                 var scores = serverInfo.allGames.SelectMany(x => x.Item3).GroupBy(x => x.Item1)
                          .Select(group => Tuple.Create(group.Key, group.Count(), group.Aggregate(0, (cur, next) => cur += int.Parse(next.Item2))))
                          .OrderByDescending(x => x.Item3).ToList();
-                int dy = labelServerTeams.Height;
+                int dy = labelServerTeams.Height+5;
                 int starty = labelServerTeams.Location.Y + dy;
                 for (int i = 0; i < scores.Count; i++)
                 {
                     {
                         var label = new Label();
                         label.Location = new Point(labelServerTeams.Location.X, starty + dy * i);
-                        label.Text = scores[i].Item1;
+                        label.Text = " "+ scores[i].Item1;
                         labelServerTeams.Parent.Controls.Add(label);
                     }
                     {
                         var label = new Label();
                         label.Location = new Point(labelServerGameCount.Location.X, starty + dy * i);
-                        label.Text = scores[i].Item1;
+                        label.Text = " " + scores[i].Item2.ToString();
                         labelServerTeams.Parent.Controls.Add(label);
                     }
                     {
                         var label = new Label();
                         label.Location = new Point(labelServerPlayerScore.Location.X, starty + dy * i);
-                        label.Text = scores[i].Item1;
+                        label.Text = " " + scores[i].Item3.ToString();
                         labelServerTeams.Parent.Controls.Add(label);
                     }
                 }
@@ -385,19 +385,20 @@ C:\Program Files\Java\jre1.8.0_73 )";
                     {
                         var label = new Label();
                         label.Location = new Point(labelServerGameTime.Location.X, starty + dy * i);
-                        label.Text = games[i].Item2.ToString("hh:mm");
+                        label.Text = games[i].Item2.ToString("HH:mm");
                         labelServerGameTime.Parent.Controls.Add(label);
                     }
                     {
                         var label = new Label();
                         label.Location = new Point(labelServerGamePlayersAndResults.Location.X, starty + dy * i);
-                        label.Text = string.Join(" ", games[i].Item3.Select(x=>$"{x.Item1}({x.Item2})"));
+                        label.Text = " " + string.Join(" ", games[i].Item3.Select(x=>$"{x.Item1}({x.Item2})"));
                         labelServerGameTime.Parent.Controls.Add(label);
                     }
                     {
                         var button = new Button();
                         button.Location = new Point(btnServerWatchGame.Location.X, starty + dy * i);
-                        button.Text = btnServerWatchGame.Text;
+                        button.Size = btnServerWatchGame.Size;
+                        button.Text = " " + btnServerWatchGame.Text;
                         button.Tag = games[i].Item1;
                         button.Click += btnServerWatchGame_Click;
                         labelServerGameTime.Parent.Controls.Add(button);
@@ -421,7 +422,7 @@ C:\Program Files\Java\jre1.8.0_73 )";
                     GameCore<FormState, Turn, Round, Player>.TryRunAsSingleton((x, y) => new SimpleGame(x, y), new List<FormState> { formState }, file);
                 }
             }
-            catch
+            catch(Exception ex)
             {
                 MessageBox.Show("Не удалось воспроизвести");
             }
@@ -431,6 +432,7 @@ C:\Program Files\Java\jre1.8.0_73 )";
         private void EdtServerActivateGameRunnerForServer_CheckedChanged(object sender, EventArgs e)
         {
             serverInfo.activateServerMode = edtServerActivateGameRunnerForServer.Checked;
+            needRefreshControls = true;
         }
 
 
@@ -486,6 +488,21 @@ C:\Program Files\Java\jre1.8.0_73 )";
 
         private void GameRunnerTimer_Tick(object sender, EventArgs e)
         {
+            if (call != null)
+            {
+                var currentState = call.Call<Guid>("GetCurrentState", "", "", Guid.Empty);
+                if (currentState != Guid.Empty && serverInfo.currentState != currentState)
+                {
+                    serverInfo.currentState = currentState;
+                    var allGameResult = call.Call<List<Tuple<Guid, DateTime, List<Tuple<string, string>>>>>("GetAllGameResults", "start get all game results", "finish get all game results", null);
+                    if (allGameResult != null)
+                    {
+                        serverInfo.allGames = allGameResult;
+                        needRefreshControls = true;
+                    }
+                }
+            }
+
             bool canRun = serverInfo.activateServerMode && GameCore<FormState, Turn, Round, Player>.IsWorking == false;
             if (canRun == false)
                 return;
@@ -515,15 +532,23 @@ C:\Program Files\Java\jre1.8.0_73 )";
                     for (int i = cur; i < formState.ProgramAddressesAll.Count; i++)
                         formState.ProgramAddressesInMatch.Add(i);
                     formState.ReplayFolder = directory;
-                    formState.ReplayFileName = gameId.ToString();//now сломал его
+                    formState.ReplayFileName = "replay.txt";//now сломал его
                     formState.SaveReplays = true;
                     //нужно встряхнуть рандомайзер
                     formState.RandomSeed = new Random().Next();
 
-                    var gameResult = GameCore<FormState, Turn, Round, Player>.TryRunAsSingleton((x, y) => new SimpleGame(x, y), new List<FormState> { formState }, null, closeAutomaticallyAfterGameFinish: true);
-                    var replay = formState.ReplayFolder + Path.DirectorySeparatorChar + formState.ReplayFileName;
-                    var bytes = File.ReadAllBytes(replay);
-                    call.CallVoid("GameRunnerGamePlayed", "game played start", "game played finish", gameId, gameResult, bytes);
+                    //если игра не завершилась(прервали), вернет null
+                    var gameResultOrNull = GameCore<FormState, Turn, Round, Player>.TryRunAsSingleton((x, y) => new SimpleGame(x, y), new List<FormState> { formState }, null, closeAutomaticallyAfterGameFinish: true);
+                    if (gameResultOrNull == null)
+                    {
+                        serverInfo.activateServerMode = false;
+                    }
+                    else
+                    {
+                        var replay = formState.ReplayFolder + Path.DirectorySeparatorChar + formState.ReplayFileName;
+                        var bytes = File.ReadAllText(replay);
+                        call.CallVoid("GameRunnerGamePlayed", "game played start", "game played finish", gameId, gameResultOrNull, bytes);
+                    }
                 }
             }
         }
@@ -532,12 +557,7 @@ C:\Program Files\Java\jre1.8.0_73 )";
         {
             if(message == "Refresh")
             {
-                var allGameResult = call.Call<List<Tuple<Guid, DateTime, List<Tuple<string, string>>>>>("GetAllGameResults", "start get all game results", "finish get all game results", null);
-                if(allGameResult != null)
-                {
-                    serverInfo.allGames = allGameResult;
-                    needRefreshControls = true;
-                }
+                
             }
             
         }
@@ -547,6 +567,7 @@ C:\Program Files\Java\jre1.8.0_73 )";
         {
             public List<Tuple<Guid, DateTime, List<Tuple<string, string>>>> allGames = new List<Tuple<Guid, DateTime, List<Tuple<string, string>>>>();
             public bool activateServerMode = false;//now handler here
+            public Guid currentState = Guid.Empty;
         }
 
 

@@ -55,8 +55,10 @@ namespace Framework
                 {
                     var replay = Serialize.TryReadFromXmlFile<Replay>(replayFile);
                     if (replay == null)
+                    {
+                        IsWorking = false;
                         return null;
-
+                    }
                     try
                     {
 
@@ -67,6 +69,7 @@ namespace Framework
                     {
                         if (Debugger.IsAttached)
                             throw;
+                        IsWorking = false;
                         return null;
                     }
                 }
@@ -80,7 +83,7 @@ namespace Framework
                 _instance._gameForm.Load += (s, e) => _instance.TryInitNextGame();
                 _instance._gameForm.ShowDialog(true);
 
-                return _instance._game.GetCurrentSituation();
+                return _instance._game.GameFinished ? _instance._game.GetCurrentSituation() : (List<string>)null;
                 //todo keyboard
             }
            // catch { /*if (Debugger.IsAttached) throw;*/ }

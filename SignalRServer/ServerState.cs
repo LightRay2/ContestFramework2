@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,7 @@ namespace SignalRServer
 {
     public class ServerState : INotifyPropertyChanged
     {
+        public const string GameRunnerPassword = "qazASD890";
         static ServerState _e;
         public static ServerState e
         {
@@ -25,11 +27,15 @@ namespace SignalRServer
                     Directory.CreateDirectory(FolderExecutablesWithSlash);
                     Directory.CreateDirectory(FolderReplaysWithSlash);
                     _e = ServerState.LoadOrCreate();
-                    _e.Players.Add(new ServerPlayer { uniqueName = "one", password = "one" });
-                    _e.Players.Add(new ServerPlayer { uniqueName = "two", password = "two" });
-                    _e.Players.Add(new ServerPlayer { uniqueName = "three", password = "three" });
-                    _e.Players.Add(new ServerPlayer { uniqueName = "four", password = "four" });
-                    _e.Players.Add(new ServerPlayer { uniqueName = "five", password = "five" });
+                    if (_e.Players.Count == 0)
+                    {
+                        _e.Players.Add(new ServerPlayer { uniqueName = "one", password = "one" });
+                        _e.Players.Add(new ServerPlayer { uniqueName = "two", password = "two" });
+                        _e.Players.Add(new ServerPlayer { uniqueName = "three", password = "three" });
+                        _e.Players.Add(new ServerPlayer { uniqueName = "four", password = "four" });
+                        _e.Players.Add(new ServerPlayer { uniqueName = "five", password = "five" });
+                    }
+                    
                 }
                 return _e;
             }
@@ -173,7 +179,7 @@ namespace SignalRServer
         // ================сами свойства===========================
 
 
-        ObservableCollection<ServerPlayer> _players;
+        ObservableCollection<ServerPlayer> _players = new ObservableCollection<ServerPlayer>();
         public ObservableCollection<ServerPlayer> Players
         {
             get
@@ -186,6 +192,7 @@ namespace SignalRServer
                 return _players;
             }
         }
+        
         ObservableCollection<ServerGame> _games;
         public ObservableCollection<ServerGame> Games
         {
@@ -200,19 +207,31 @@ namespace SignalRServer
             }
         }
 
+        Guid _currentState = Guid.NewGuid();
+        public Guid CurrentState
+        {
+            get { return _currentState; }
+            set { _currentState = value; if (!loading) Notify("CurrentState"); }
+        }
+        
+
 
     }
-    
+
     public class ServerPlayer
     {
         public string uniqueName;
         public string password;
         public string lastProgramRelativePathOrNull;
         public DateTime programSent;
+        [XmlIgnore]
+        [JsonIgnore]
+        public string AbsolutePath { get { return ServerState.FolderExecutablesWithSlash + lastProgramRelativePathOrNull; } }
     }
-
+    
     public class ServerGame
     {
+        const string DATE_FORMAT = "dd.MM.yyyy.HH.mm.ss";
         public Guid id;
         [Obsolete("Use another constructor")]
         public ServerGame() { }
@@ -221,7 +240,7 @@ namespace SignalRServer
             id = Guid.NewGuid();
             //now !! delete all __ in players and programs  
             var date = DateTime.Now;
-            RelativePath = $"{date}__{playersAndScores.Count}__{string.Join("__", playersAndScores.Select(x => x.Item1.uniqueName + "__" + x.Item2))}.txt";
+            RelativePath = $"{date.ToString(DATE_FORMAT)}__{playersAndScores.Count}__{string.Join("__", playersAndScores.Select(x => x.Item1.uniqueName + "__" + x.Item2))}__.txt";
             File.WriteAllText(ServerState.FolderReplaysWithSlash + RelativePath, jsonData);
         }
 
@@ -232,7 +251,7 @@ namespace SignalRServer
 
 
         [XmlIgnore]
-        public DateTime dateTime { get { return DateTime.Parse(Split()[0]); } }
+        public DateTime dateTime { get { return DateTime.ParseExact(Split()[0], DATE_FORMAT, CultureInfo.InvariantCulture); } }
         [XmlIgnore]
         [Obsolete("warning! can be null")]
         public List<Tuple<ServerPlayer, string>> playersAndScores
