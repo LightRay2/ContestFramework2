@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Xml.Serialization;
 
 
 
@@ -28,19 +29,37 @@ namespace SimpleContest
         //здесь переменные, описывающие конкретный раунд
     }
 
+    public class SerializableVector2d
+    {
+        public SerializableVector2d() { }
+        public SerializableVector2d(Vector2d v) { this.x = v.X; this.y = v.Y; }
+        public double x { get; set; }
+        public double y { get; set; }
+        public Vector2d ToVector2d() { return new Vector2d(x, y); }
+
+    }
     public class Turn : ITurn<Player>, ITimelineCell
     {
-        internal Vector2d? ballAim;
-        internal List<Vector2d> manAims;
+        [XmlIgnore]
+        public Vector2d? ballAim;
+        public SerializableVector2d ballAim_notUse
+        {
+            get { if (ballAim == null) return null; else return new SerializableVector2d(ballAim.Value); }
+            set { if (value == null) ballAim = null; else ballAim = value.ToVector2d(); }
+        }
+        public List<SerializableVector2d> manAims;
 
         public string input { get; set; }
         public string output { get; set; }
         public Player player { get; set; }
         public string shortStatus { get; set; }
 
+        [XmlIgnore]
         public Color colorOnTimeLine { get; set; }
-        public Color colorStatusOnTimeLine { get; set; }
+        public int ColorArgb { get { return colorOnTimeLine.ToArgb(); } set { colorOnTimeLine = Color.FromArgb(value); } }
+        [XmlIgnore]
         public Enum fontOnTimeLine { get; set; }
+        public string FontOnTimeLineString { get { return fontOnTimeLine.ToString(); } set { fontOnTimeLine = (SimpleGame.EFont)Enum.Parse(typeof(SimpleGame.EFont), value); } }
         public string nameOnTimeLine { get; set; }
         public Turn()
         {
@@ -55,9 +74,9 @@ namespace SimpleContest
         public string name { get; set; }
 
         public int team;
-
+        [XmlIgnore]
         public List<Man> manList = new List<Man>();
-        internal int score;
+        public int score;
         public string memoryFromPreviousTurn = null;
     }
     public class GameParams
@@ -94,7 +113,8 @@ namespace SimpleContest
             player0,
             player1
         }
-        enum ESprite {
+        enum ESprite
+        {
             back2,
             field,
             man0,
@@ -207,16 +227,16 @@ namespace SimpleContest
 
                 FontList.Load(EFont.main, "Times New Roman", 3.0, Color.FromArgb(193, 209, 255), FontStyle.Bold);
 
-                FontList.Load(EFont.player0, "Times New Roman", 3.0, Color.FromArgb(230,70,70), FontStyle.Bold);
+                FontList.Load(EFont.player0, "Times New Roman", 3.0, Color.FromArgb(230, 70, 70), FontStyle.Bold);
                 FontList.Load(EFont.player1, "Times New Roman", 3.0, Color.FromArgb(70, 230, 70), FontStyle.Bold);
 
                 SpriteList.Load(ESprite.man0, -90);
                 SpriteList.Load(ESprite.man1, -90);
             }
         }
-        public string GetCurrentSituation()
+        public List<string> GetCurrentSituation()
         {
-            return null;
+            return players.Select(x => x.score.ToString()).ToList();
 
         }
 
@@ -251,13 +271,12 @@ namespace SimpleContest
                 shortStatus = executionResultRussianComment,
                 output = output,
                 colorOnTimeLine = player.team == 0 ? Color.DarkRed : Color.DarkGreen,//Color.FromArgb(148,36,26) : Color.FromArgb(85,110,84),//
-                nameOnTimeLine = roundNumber.ToString(),
-                colorStatusOnTimeLine = Color.Gold
+                nameOnTimeLine = roundNumber.ToString()
             }; //todo now in interface just edit turn, no return
 
-            turn.manAims = new List<Vector2d>();
+            turn.manAims = new List<SerializableVector2d>();//todo заплатка
             for (int i = 0; i < 1; i++)
-                turn.manAims.Add(player.manList[i].position);
+                turn.manAims.Add(new SerializableVector2d(player.manList[i].position));
 
 
             if (executionResult == ExecuteResult.Ok)
@@ -277,7 +296,7 @@ namespace SimpleContest
                         CheckDoubleWithException(playerAims.Last().Y);
                     }
 
-                    turn.manAims = playerAims;
+                    turn.manAims = playerAims.Select(x=>new SerializableVector2d(x)).ToList();
                 }
                 catch
                 {
@@ -348,7 +367,7 @@ namespace SimpleContest
             });
 
             var manSpeedsNormalized = new List<Vector2d>();
-            var manAims = round.turns.SelectMany(x => x.manAims).ToList();
+            var manAims = round.turns.SelectMany(x => x.manAims.Select(tt=>tt.ToVector2d())).ToList();
             for (int i = 0; i < _manList.Count; i++)
             {
                 if ((manAims[i] - _manList[i].position).Length.DoubleLessOrEqual(0))
@@ -470,7 +489,7 @@ namespace SimpleContest
             }
 
 
-            if (roundNumber == 99)
+            if (roundNumber == 19)
                 GameFinished = true;
             round.totalStage = 1;
         }
@@ -483,7 +502,7 @@ namespace SimpleContest
             int frameWidth = 160, frameHeight = 120;
             frame.CameraViewport(frameWidth, frameHeight);
 
-             frame.PolygonWithDepth(Color.Wheat, -100, new Rect2d(0, 0, frameWidth, frameHeight)); //todo line around polygon
+            frame.PolygonWithDepth(Color.Wheat, -100, new Rect2d(0, 0, frameWidth, frameHeight)); //todo line around polygon
             //frame.SpriteCorner(ESprite.brownGrunge, 0, -100, sizeOnlyHeight: frameHeight + 100);
 
 
@@ -514,7 +533,7 @@ namespace SimpleContest
                 var man = _manList[i];
                 var pos = _manAnimators[i].Get(stage);
                 var direction = _manAnimators[i].Get(stage + 0.001) - _manAnimators[i].Get(stage - 0.001);
-                var lookAt = pos +direction;
+                var lookAt = pos + direction;
                 if (i == 0)
                     frame.SpriteCenter(ESprite.man0, pos + fieldCorner, angleLookToPoint: lookAt + fieldCorner, sizeExact: new Vector2d(_manRadius * 2));
                 else
@@ -534,7 +553,7 @@ namespace SimpleContest
 
 
             // }
-            
+
             frame.TextTopLeft(EFont.player0, players[0].name + ": " + players[0].score.ToString(), 10, 3);
             frame.TextCustomAnchor(EFont.player1, players[1].name + ": " + players[1].score.ToString(), 1, 0, 110, 3);
 

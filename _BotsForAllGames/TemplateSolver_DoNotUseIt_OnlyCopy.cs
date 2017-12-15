@@ -9,11 +9,14 @@ using System.Threading;
 
 namespace CSharpTemplate
 {
+
+    //Переименовываем через ctrl+H SolverE в наше название класса
     public class SolverE
     {
 
         void Solve()
         {
+            
             //changle line in Program.cs to use this solver
             //code here. use Read...() and Write(...,...,...)
 
@@ -25,8 +28,9 @@ namespace CSharpTemplate
 
         protected static TextReader reader;
         protected static TextWriter writer;
-        public static void Run()
+        public static string Run()
         {
+            var typeName = "_";
             if (Debugger.IsAttached)
             {
                 reader = new StreamReader("..\\..\\input.txt");
@@ -43,11 +47,14 @@ namespace CSharpTemplate
                 //writer = Console.Out;
                 writer = new StreamWriter("output.txt");
             }
-            
-            new SolverE().Solve();
+
+            var game = new SolverE();
+            game.Solve();
             
             reader.Close();
             writer.Close();
+
+            return game.GetType().Name;
         }
 
         #endregion

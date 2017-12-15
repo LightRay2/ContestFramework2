@@ -29,12 +29,12 @@ namespace Framework
             public TParamsFromStartForm ParamsFromStartForm { get; set; }
             public List<TRound> AllRounds { get; set; }
         }
-        public static bool TryRunAsSingleton(Func<TParamsFromStartForm, GamePurpose, IGame<TParamsFromStartForm, TTurn, TRound, TPlayer>> GameCreationDelegate, List<TParamsFromStartForm> settings, string replayFile = null, ConcurrentDictionary<int, object> roundsFromServer = null)
+        public static List<string> TryRunAsSingleton(Func<TParamsFromStartForm, GamePurpose, IGame<TParamsFromStartForm, TTurn, TRound, TPlayer>> GameCreationDelegate, List<TParamsFromStartForm> settings, string replayFile = null, ConcurrentDictionary<int, object> roundsFromServer = null, bool closeAutomaticallyAfterGameFinish=false)
         {
            // try
             {
                 if (IsWorking)
-                    return false;
+                    return null;
                 IsWorking = true;
                 _roundsFromServer = roundsFromServer;
 
@@ -46,6 +46,8 @@ namespace Framework
 
                 _instance = new GameCore<TParamsFromStartForm, TTurn, TRound, TPlayer>();
                 _instance._GameCreationDelegate = GameCreationDelegate;
+
+                _instance._closeAutomaticallyAfterGameFinished = closeAutomaticallyAfterGameFinish;
                 // _instance._game = GameCreationDelegate( game;
                 if (replayFile == null)
                     _instance._settings = settings;
@@ -53,8 +55,10 @@ namespace Framework
                 {
                     var replay = Serialize.TryReadFromXmlFile<Replay>(replayFile);
                     if (replay == null)
-                        return false;
-
+                    {
+                        IsWorking = false;
+                        return null;
+                    }
                     try
                     {
 
@@ -65,7 +69,8 @@ namespace Framework
                     {
                         if (Debugger.IsAttached)
                             throw;
-                        return false;
+                        IsWorking = false;
+                        return null;
                     }
                 }
                 GameCreationDelegate(_instance._settings[0], GamePurpose.LoadSpritesAndFonts).LoadSpritesAndFonts();
@@ -78,11 +83,11 @@ namespace Framework
                 _instance._gameForm.Load += (s, e) => _instance.TryInitNextGame();
                 _instance._gameForm.ShowDialog(true);
 
-
+                return _instance._game.GameFinished ? _instance._game.GetCurrentSituation() : (List<string>)null;
                 //todo keyboard
             }
            // catch { /*if (Debugger.IsAttached) throw;*/ }
-            return true;
+           // return true;
         }
 
         static GameCore<TParamsFromStartForm, TTurn, TRound, TPlayer> _instance;
@@ -105,6 +110,7 @@ namespace Framework
         List<TParamsFromStartForm> _settings;
         TRound _currentRound;
 
+        bool _closeAutomaticallyAfterGameFinished;
         ConcurrentDictionary<int, TRound> _allRounds;
 
         enum EGameMode { localWithHuman, localWithoutHuman, fromServer, replayFile };
@@ -233,6 +239,9 @@ namespace Framework
                     break;
                 case EProcessPhase.gameFinished:
                     _gameForm.InfoAction = "Игра завершена";
+
+                    if (_closeAutomaticallyAfterGameFinished)
+                        GameForm.UserWantsToClose = true;
                     break;
             }
 

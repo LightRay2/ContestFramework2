@@ -135,7 +135,7 @@ namespace CSharpTemplate
 
         protected static TextReader reader;
         protected static TextWriter writer;
-        public static void Run()
+        public static string Run()
         {
             if (Debugger.IsAttached)
             {
@@ -153,10 +153,14 @@ namespace CSharpTemplate
                 //writer = Console.Out;
                 writer = new StreamWriter("output.txt");
             }
-            
-            new SolverA().Solve();
+
+            var game = new SolverA();
+            game.Solve();
+
             reader.Close();
             writer.Close();
+
+            return game.GetType().Name;
         }
 
         #endregion

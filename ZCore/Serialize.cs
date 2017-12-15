@@ -42,7 +42,7 @@ namespace Framework
                 reader = new StreamReader(filePath);
                 returned = (T)serializer.Deserialize(reader);
             }
-            catch
+            catch(Exception ex)
             {
                 ok = false;
             }

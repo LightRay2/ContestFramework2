@@ -49,7 +49,8 @@
     <Compile Include="MiddleAgeBattle_2018\SolverA.cs" />
     <Compile Include="MiddleAgeBattle_2018\SolverB.cs" />
     <Compile Include="MiddleAgeBattle_2018\Misha1.cs" />
-    <Compile Include="SolverD.cs" />
+    <Compile Include="SimpleGame\SimpleGameEasy.cs" />
+    <Compile Include="SimpleGame\SimpleGameNormal.cs" />
     <Compile Include="TemplateSolver_DoNotUseIt_OnlyCopy.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -58,6 +59,9 @@
   <ItemGroup>
     <Content Include="input.txt" />
     <Content Include="output.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="_OUTPUT_USE_SHOW_ALL_FILES\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

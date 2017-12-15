@@ -23,9 +23,9 @@ namespace SimpleContest
         /// </summary>
         public FormState()
         {
-            if (legalCreation == false)
-                throw new Exception("Используйте для создания LoadOrCreate");
-            legalCreation = false;
+            //if (legalCreation == false)
+            //    throw new Exception("Используйте для создания LoadOrCreate");
+            //legalCreation = false;
         }
         public static FormState LoadOrCreate()
         {
@@ -186,15 +186,45 @@ namespace SimpleContest
             set { _replayFolder = value; if (!loading) Notify("ReplayFolder"); }
         }
 
+        string _replayFileName = null;
         public string ReplayFileName
         {
             get
             {
-                return string.Format("{0}__{1}__{2}.rpl",
+
+                return _replayFileName?? string.Format("{0}__{1}__{2}.rpl",
                     DateTime.Now.ToString("HHmmss_ddMMyyyy"),
                     Path.GetFileNameWithoutExtension(this.ProgramAddressesAll[this.ProgramAddressesInMatch[0]]),
                     Path.GetFileNameWithoutExtension(this.ProgramAddressesAll[this.ProgramAddressesInMatch[1]]));
             }
+            set
+            {
+                _replayFileName = value; if (!loading) Notify("ReplayFileName");
+            }
         }
+
+
+        #region Server
+        string _serverAddress= "http://localhost:8080";
+        public string ServerAddress
+        {
+            get { return _serverAddress; }
+            set { _serverAddress = value; if (!loading) Notify("ServerAddress"); }
+        }
+
+        string _serverLogin="";
+        public string ServerLogin
+        {
+            get { return _serverLogin; }
+            set { _serverLogin = value; if (!loading) Notify("ServerLogin"); }
+        }
+
+        string _serverPassword="";
+        public string ServerPassword
+        {
+            get { return _serverPassword; }
+            set { _serverPassword = value; if (!loading) Notify("ServerPassword"); }
+        }
+        #endregion
     }
 }
