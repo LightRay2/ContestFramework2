@@ -179,7 +179,7 @@ namespace Contest2018
         {
             FrameworkSettings.GameNameEnglish = "SimpleGame";
             FrameworkSettings.RunGameImmediately = false;
-            FrameworkSettings.AllowFastGameInBackgroundThread = true;
+            FrameworkSettings.AllowFastGameInBackgroundThread = false;
             FrameworkSettings.FramesPerTurn = 20;
 
             FrameworkSettings.PlayersPerGameMin = 2;
@@ -463,7 +463,11 @@ namespace Contest2018
             // animdb = new Animator<int>(Linear, 0, 255, 1);
             round.totalStage = 0;
             if (round.turns[0].delta != 0 || round.turns[1].delta != 0)
-                round.totalStage = 1;
+               round.totalStage = 1;
+            if ((round.turns[0].action != 0 && round.turns[0].action != 6) || (round.turns[1].action != 0 && round.turns[1].action != 6))
+                round.totalStage += 0.5;
+            if ((round.turns[0].action == 6 || round.turns[1].action == 6))
+                round.totalStage += 1.3;
             animshells = new List<Animator<Vector2d>>();
             for(int i=0;i<gameobjects.Count;i++)
             {
@@ -487,7 +491,6 @@ namespace Contest2018
                 if (round.turns[k].action != 0 && round.turns[k].action != 6)
                 {
                     gameobjects.RemoveAll((x) => x.pos == round.turns[k].player.pos);
-                    round.totalStage += 0.5;
                     animobject = new Animator<int>(Linear, 0, 255, 0.5);
                 }
                 switch (round.turns[k].action)
@@ -543,7 +546,6 @@ namespace Contest2018
                             if (players[currentplayer].gold >= 400 && gameobjects.Find(x => x.obj == TypeofObject.observationtower && players[currentplayer].pos == x.pos) != null)
                             {
                                 players[currentplayer].gold -= 400;
-                                round.totalStage += 1.3;
                                 for (int i = 0; i < gameobjects.Count; i++)
                                 {
                                     double Purpose = -100;
@@ -716,19 +718,7 @@ namespace Contest2018
                             }
                     }
             }
-            double constage = 0;
-            if (totalStage == 1.5)
-            {
-                constage = stage - 1;
-            }
-            else
-            {
-                if (totalStage == 0.5)
-                {
-                    constage = stage;
-                }
-            }
-            if (totalStage == 1.5 && stage > 1 || totalStage == 0.5)
+            if (stage>1 || totalStage<1)
                 for (int i = 0; i < gameobjects.Count; i++)
                     if (gameobjects[i].isnew)
                     {
@@ -784,11 +774,14 @@ namespace Contest2018
                     }
             for (int i = 0; i < animshells.Count; i++)
             {
-                if (stage < 1)
-                    frame.Circle(Color.Black, animshells[i].Get(stage), 10);
-                else
-                    frame.SpriteCenter(ESprite.explosion, animshells[i].Get(stage), sizeExact: new Vector2d(100), frameNumber:
-                            (int)(((stage - 1) * 10) * 10).ToRange(0, 30));
+                if (totalStage - stage < 1.3)
+                {
+                    if (totalStage - stage >0.3)
+                        frame.Circle(Color.Black, animshells[i].Get(stage), 10);
+                    else
+                        frame.SpriteCenter(ESprite.explosion, animshells[i].Get(stage), sizeExact: new Vector2d(100), frameNumber:
+                                (int)(((stage - 1) * 10) * 10).ToRange(0, 30));
+                }
             }
 
            // frame.TextCenter(EFont.player0, st, 300, 550);//вывод всего кода
