@@ -179,7 +179,7 @@ namespace Contest2018
         {
             FrameworkSettings.GameNameEnglish = "SimpleGame";
             FrameworkSettings.RunGameImmediately = false;
-            FrameworkSettings.AllowFastGameInBackgroundThread = false;
+            FrameworkSettings.AllowFastGameInBackgroundThread = true;
             FrameworkSettings.FramesPerTurn = 20;
 
             FrameworkSettings.PlayersPerGameMin = 2;
