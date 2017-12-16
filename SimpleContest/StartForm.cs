@@ -100,7 +100,7 @@ namespace SimpleContest
                     Size = new Size(205, 30),
                     FlatStyle = System.Windows.Forms.FlatStyle.Flat,
                     Appearance = System.Windows.Forms.Appearance.Button,
-                    Text = new string(text.Reverse().Take(25).Reverse().ToArray()),
+                    Text = new string(text.Reverse().Take(20).Reverse().ToArray()),
                     BackColor = formState.ProgramAddressesInMatch.Contains(i) ? checkedColor : uncheckedColor
                 };
                 toolTip.SetToolTip(checkBox, text);
@@ -129,7 +129,7 @@ namespace SimpleContest
                 var label = new Label
                 {
                     Tag = i,
-                    Text = new string(text.Reverse().Take(70).Reverse().ToArray()),
+                    Text = new string(text.Reverse().Take(62).Reverse().ToArray()),
                     Padding = new Padding { All = 5 },
                     Margin = new Padding { All = 3 },
                     Size = new Size(560, 32),

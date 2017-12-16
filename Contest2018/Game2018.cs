@@ -543,7 +543,6 @@ namespace Contest2018
                         }
                     case 6:
                         {
-                            animshells = new List<Animator<Vector2d>>();
                             if (players[currentplayer].gold >= 400 && gameobjects.Find(x => x.obj == TypeofObject.observationtower && players[currentplayer].pos == x.pos) != null)
                             {
                                 players[currentplayer].gold -= 400;
