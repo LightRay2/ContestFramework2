@@ -60,7 +60,7 @@ namespace Contest2018
         public string name { get; set; }
         public int team;
 
-        public int hptower = 2000;
+        public int hptower = 20000;
         public int gold = 1000;
         public string memory = "";
         public int pos = 0;
@@ -108,6 +108,7 @@ namespace Contest2018
 
         public int FollowingPlayer = 1;
         public List<ObjectGame> gameobjects;
+        public List<ObjectGame> deadGameObjects = new List<ObjectGame>();
         public string st;
         public enum EFont
         {
@@ -179,7 +180,7 @@ namespace Contest2018
         {
             FrameworkSettings.GameNameEnglish = "SimpleGame";
             FrameworkSettings.RunGameImmediately = false;
-            FrameworkSettings.AllowFastGameInBackgroundThread = false;
+            FrameworkSettings.AllowFastGameInBackgroundThread = true;
             FrameworkSettings.FramesPerTurn = 20;
 
             FrameworkSettings.PlayersPerGameMin = 2;
@@ -204,7 +205,7 @@ namespace Contest2018
                 FontList.Load(EFont.timelineNormal, "Times New Roman", 20.0, Color.FromArgb(193, 180, 255), FontStyle.Bold);
                 FontList.Load(EFont.timelineError, "Times New Roman", 20.0, Color.Red, FontStyle.Bold);
 
-                FontList.Load(EFont.main, "Times New Roman", 3.0, Color.FromArgb(193, 209, 255), FontStyle.Bold);
+                FontList.Load(EFont.main, "Times New Roman", 30.0, Color.Black, FontStyle.Bold);
 
                 FontList.Load(EFont.player0, "Times New Roman", 15.0, Color.FromArgb(230, 70, 70), FontStyle.Bold);
                 FontList.Load(EFont.player1, "Times New Roman", 3.0, Color.FromArgb(70, 230, 70), FontStyle.Bold);
@@ -231,7 +232,7 @@ namespace Contest2018
 
 
         Rect2d _arena = new Rect2d(0, 0, 100, 100);
-        int _turnLimit = 200;
+        int _turnLimit = 120;
         public string GetInputFile(Player player)
         {
             var st = new StringBuilder();
@@ -552,17 +553,22 @@ namespace Contest2018
                                     int r = _rand.Next(-1, 3);
                                     if (round.turns[k].player.team == 0 && gameobjects[i].pos < 9 && (int)gameobjects[i].obj > 2)
                                     {
-                                        double start = gameobjects[i].pos + 140 + 65 * gameobjects[i].pos;
-                                        animshells.Add(new Animator<Vector2d>(Parabol, new Vector2d(start, 332), new Vector2d((start + 65 * gameobjects[i].distance < 1270 ? start + 65 * gameobjects[i].distance : 1270) + r % 2 * 65, 332), 1));
-                                        Purpose = (gameobjects[i].pos + gameobjects[i].distance + r % 2);
+                                        Purpose = Math.Min(18, (gameobjects[i].pos + gameobjects[i].distance + r % 2));
+                                        double start = /*gameobjects[i].pos + */140 + 65 * gameobjects[i].pos;
+                                        var finish = 140 + 65 * Purpose;
+                                        animshells.Add(new Animator<Vector2d>(Parabol, new Vector2d(start, 332), new Vector2d(finish, 332), 1));
+                                        //animshells.Add(new Animator<Vector2d>(Parabol, new Vector2d(start, 332), new Vector2d((start + 65 * gameobjects[i].distance < 1270 ? start + 65 * gameobjects[i].distance : 1270) + r % 2 * 65, 332), 1));
                                     }
                                     else
                                     {
                                         if (round.turns[k].player.team == 1 && gameobjects[i].pos > 8 && (int)gameobjects[i].obj > 2)
                                         {
-                                            double start = gameobjects[i].pos + 140 + 65 * gameobjects[i].pos;
-                                            animshells.Add(new Animator<Vector2d>(Parabol, new Vector2d(start, 332), new Vector2d((start - 65 * gameobjects[i].distance > 100 ? start - 65 * gameobjects[i].distance : 100) + r % 2 * 65, 332), 1));
-                                            Purpose = (gameobjects[i].pos - gameobjects[i].distance - r % 2);
+                                            Purpose = Math.Max(-1, (gameobjects[i].pos - gameobjects[i].distance - r % 2));
+                                            double start = /*gameobjects[i].pos + */140 + 65 * gameobjects[i].pos;
+                                            var finish = 140 + 65 * Purpose;
+                                            animshells.Add(new Animator<Vector2d>(Parabol, new Vector2d(start, 332), new Vector2d(finish, 332), 1));
+
+                                            //animshells.Add(new Animator<Vector2d>(Parabol, new Vector2d(start, 332), new Vector2d((start - 65 * gameobjects[i].distance > 100 ? start - 65 * gameobjects[i].distance : 100) + r % 2 * 65, 332), 1));
                                         }
                                     }
                                     if (Purpose != -100)
@@ -610,6 +616,7 @@ namespace Contest2018
                     players[currentplayer].gold += 100;
                 }
             }
+            deadGameObjects= gameobjects.Where(x => x.hp <= 0).ToList();
             gameobjects.RemoveAll(x => x.hp <= 0);
             if (roundNumber == _turnLimit || players[0].hptower * players[1].hptower <= 0)
             {
@@ -665,54 +672,55 @@ namespace Contest2018
                 frame.SpriteCenter(ESprite.playerr, 132 + animplayer0.Get(stage > 1 ? 1 : stage), 430);
                 frame.SpriteCenter(ESprite.playerl, 132 + animplayer1.Get(stage > 1 ? 1 : stage), 430);
             }
-            for (int i = 0; i < gameobjects.Count; i++)
+            var aliveAndDeadObjects = gameobjects.Union(deadGameObjects).ToList();
+            for (int i = 0; i < aliveAndDeadObjects.Count; i++)
             {
-                if (!gameobjects[i].isnew)
-                    switch ((int)gameobjects[i].obj)
+                if (!aliveAndDeadObjects[i].isnew)
+                    switch ((int)aliveAndDeadObjects[i].obj)
                     {
                         case 1:
                             {
-                                frame.SpriteCenter(ESprite.farm, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
+                                frame.SpriteCenter(ESprite.farm, 132 + 65 * aliveAndDeadObjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
                                 break;
                             }
                         case 2:
                             {
-                                frame.SpriteCenter(ESprite.observationtower, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
+                                frame.SpriteCenter(ESprite.observationtower, 132 + 65 * aliveAndDeadObjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
                                 break;
                             }
                         case 3:
                             {
-                                if (gameobjects[i].pos < 9)
+                                if (aliveAndDeadObjects[i].pos < 9)
                                 {
-                                    frame.SpriteCenter(ESprite.catapultr, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
+                                    frame.SpriteCenter(ESprite.catapultr, 132 + 65 * aliveAndDeadObjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
                                 }
                                 else
                                 {
-                                    frame.SpriteCenter(ESprite.catapultl, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
+                                    frame.SpriteCenter(ESprite.catapultl, 132 + 65 * aliveAndDeadObjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
                                 }
                                 break;
                             }
                         case 4:
                             {
-                                if (gameobjects[i].pos < 9)
+                                if (aliveAndDeadObjects[i].pos < 9)
                                 {
-                                    frame.SpriteCenter(ESprite.cannonr, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
+                                    frame.SpriteCenter(ESprite.cannonr, 132 + 65 * aliveAndDeadObjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
                                 }
                                 else
                                 {
-                                    frame.SpriteCenter(ESprite.cannonl, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
+                                    frame.SpriteCenter(ESprite.cannonl, 132 + 65 * aliveAndDeadObjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
                                 }
                                 break;
                             }
                         case 5:
                             {
-                                if (gameobjects[i].pos < 9)
+                                if (aliveAndDeadObjects[i].pos < 9)
                                 {
-                                    frame.SpriteCenter(ESprite.ballistar, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
+                                    frame.SpriteCenter(ESprite.ballistar, 132 + 65 * aliveAndDeadObjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
                                 }
                                 else
                                 {
-                                    frame.SpriteCenter(ESprite.ballistal, 132 + 65 * gameobjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
+                                    frame.SpriteCenter(ESprite.ballistal, 132 + 65 * aliveAndDeadObjects[i].pos, 332, angleDeg: 90, sizeOnlyHeight: 65, sizeOnlyWidth: 65);
                                 }
                                 break;
                             }
@@ -776,15 +784,26 @@ namespace Contest2018
             {
                 if (totalStage - stage < 1.3)
                 {
-                    if (totalStage - stage >0.3)
-                        frame.Circle(Color.Black, animshells[i].Get(stage), 10);
-                    else
-                        frame.SpriteCenter(ESprite.explosion, animshells[i].Get(stage), sizeExact: new Vector2d(100), frameNumber:
-                                (int)(((stage - 1) * 10) * 10).ToRange(0, 30));
+                    if (totalStage - stage > 0.3)
+                        frame.Circle(Color.Black, animshells[i].Get(1.3 - (totalStage - stage)), 10);
+                    else {
+                        int frameNumber = (int)(((0.3 - (totalStage - stage)) * 10) * 10).ToRange(0, 29);
+                       // if (frameNumber < 29) {
+                            frame.SpriteCenter(ESprite.explosion, animshells[i].Get(stage), sizeExact: new Vector2d(100), frameNumber: frameNumber   );
+                      //  }
+                    }
                 }
             }
 
-           // frame.TextCenter(EFont.player0, st, 300, 550);//вывод всего кода
+
+
+            frame.TextCustomAnchor(EFont.main, players[0].gold.ToString(), 0, 0, Vector2d.Zero + new Vector2d(100));
+            frame.TextCustomAnchor(EFont.main, players[1].gold.ToString(), 1, 0, Vector2d.UnitX * 1400 + new Vector2d(-100,100));
+
+            var offset = Vector2d.UnitY * 70;
+            frame.TextCustomAnchor(EFont.main, players[0].hptower.ToString(), 0, 0, Vector2d.Zero + new Vector2d(100)+ offset);
+            frame.TextCustomAnchor(EFont.main, players[1].hptower.ToString(), 1, 0, Vector2d.UnitX * 1400 + new Vector2d(-100, 100)+ offset);
+            // frame.TextCenter(EFont.player0, st, 300, 550);//вывод всего кода
 
 
             // }

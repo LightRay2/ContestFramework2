@@ -114,6 +114,9 @@
     <Content Include="_Content\images\catapultr.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="_Content\images\explosion.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="_Content\images\farm.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

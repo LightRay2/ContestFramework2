@@ -75,6 +75,7 @@
             this.label17 = new System.Windows.Forms.Label();
             this.tabServerGameRunner = new System.Windows.Forms.TabPage();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.label4 = new System.Windows.Forms.Label();
             this.edtServerActivateGameRunnerForServer = new System.Windows.Forms.CheckBox();
             this.tabHelp = new System.Windows.Forms.TabPage();
             this.panel3 = new System.Windows.Forms.Panel();
@@ -86,10 +87,10 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.labelStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.refreshTimer = new System.Windows.Forms.Timer(this.components);
-            this.labelStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.tabControl1.SuspendLayout();
             this.tabLocalGames.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -237,7 +238,7 @@
             // btnChangeOrder
             // 
             this.btnChangeOrder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnChangeOrder.Location = new System.Drawing.Point(195, 166);
+            this.btnChangeOrder.Location = new System.Drawing.Point(191, 166);
             this.btnChangeOrder.Name = "btnChangeOrder";
             this.btnChangeOrder.Size = new System.Drawing.Size(192, 35);
             this.btnChangeOrder.TabIndex = 4;
@@ -249,7 +250,7 @@
             // 
             this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.panel2.Controls.Add(this.btnRun);
-            this.panel2.Location = new System.Drawing.Point(310, 419);
+            this.panel2.Location = new System.Drawing.Point(306, 419);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(248, 69);
             this.panel2.TabIndex = 3;
@@ -278,7 +279,7 @@
             // btnClearSelection
             // 
             this.btnClearSelection.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClearSelection.Location = new System.Drawing.Point(393, 166);
+            this.btnClearSelection.Location = new System.Drawing.Point(389, 166);
             this.btnClearSelection.Name = "btnClearSelection";
             this.btnClearSelection.Size = new System.Drawing.Size(189, 35);
             this.btnClearSelection.TabIndex = 5;
@@ -289,10 +290,10 @@
             // tabServer
             // 
             this.tabServer.Controls.Add(this.panel6);
-            this.tabServer.Location = new System.Drawing.Point(4, 27);
+            this.tabServer.Location = new System.Drawing.Point(4, 22);
             this.tabServer.Name = "tabServer";
             this.tabServer.Padding = new System.Windows.Forms.Padding(3);
-            this.tabServer.Size = new System.Drawing.Size(898, 518);
+            this.tabServer.Size = new System.Drawing.Size(898, 523);
             this.tabServer.TabIndex = 7;
             this.tabServer.Text = "Отправить решение на сервер";
             this.tabServer.UseVisualStyleBackColor = true;
@@ -304,7 +305,7 @@
             this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel6.Location = new System.Drawing.Point(3, 3);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(892, 512);
+            this.panel6.Size = new System.Drawing.Size(892, 517);
             this.panel6.TabIndex = 2;
             // 
             // tabControl2
@@ -317,7 +318,7 @@
             this.tabControl2.Location = new System.Drawing.Point(0, 0);
             this.tabControl2.Name = "tabControl2";
             this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(892, 512);
+            this.tabControl2.Size = new System.Drawing.Size(892, 517);
             this.tabControl2.TabIndex = 0;
             // 
             // tabServerSend
@@ -326,7 +327,7 @@
             this.tabServerSend.Location = new System.Drawing.Point(4, 27);
             this.tabServerSend.Name = "tabServerSend";
             this.tabServerSend.Padding = new System.Windows.Forms.Padding(3);
-            this.tabServerSend.Size = new System.Drawing.Size(884, 481);
+            this.tabServerSend.Size = new System.Drawing.Size(884, 486);
             this.tabServerSend.TabIndex = 0;
             this.tabServerSend.Text = "Отправить решение";
             this.tabServerSend.UseVisualStyleBackColor = true;
@@ -349,7 +350,7 @@
             this.panel7.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel7.Location = new System.Drawing.Point(3, 3);
             this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(878, 475);
+            this.panel7.Size = new System.Drawing.Size(878, 480);
             this.panel7.TabIndex = 2;
             // 
             // button2
@@ -463,10 +464,10 @@
             // tabServerRating
             // 
             this.tabServerRating.Controls.Add(this.panel8);
-            this.tabServerRating.Location = new System.Drawing.Point(4, 27);
+            this.tabServerRating.Location = new System.Drawing.Point(4, 22);
             this.tabServerRating.Name = "tabServerRating";
             this.tabServerRating.Padding = new System.Windows.Forms.Padding(3);
-            this.tabServerRating.Size = new System.Drawing.Size(884, 481);
+            this.tabServerRating.Size = new System.Drawing.Size(884, 486);
             this.tabServerRating.TabIndex = 1;
             this.tabServerRating.Text = "Предварительный рейтинг";
             this.tabServerRating.UseVisualStyleBackColor = true;
@@ -482,7 +483,7 @@
             this.panel8.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel8.Location = new System.Drawing.Point(3, 3);
             this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(878, 475);
+            this.panel8.Size = new System.Drawing.Size(878, 480);
             this.panel8.TabIndex = 2;
             // 
             // label16
@@ -528,10 +529,10 @@
             // tabServerReplays
             // 
             this.tabServerReplays.Controls.Add(this.panel9);
-            this.tabServerReplays.Location = new System.Drawing.Point(4, 27);
+            this.tabServerReplays.Location = new System.Drawing.Point(4, 22);
             this.tabServerReplays.Name = "tabServerReplays";
             this.tabServerReplays.Padding = new System.Windows.Forms.Padding(3);
-            this.tabServerReplays.Size = new System.Drawing.Size(884, 481);
+            this.tabServerReplays.Size = new System.Drawing.Size(884, 486);
             this.tabServerReplays.TabIndex = 2;
             this.tabServerReplays.Text = "Просмотр игр, проведенных на сервере";
             this.tabServerReplays.UseVisualStyleBackColor = true;
@@ -547,7 +548,7 @@
             this.panel9.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel9.Location = new System.Drawing.Point(3, 3);
             this.panel9.Name = "panel9";
-            this.panel9.Size = new System.Drawing.Size(878, 475);
+            this.panel9.Size = new System.Drawing.Size(878, 480);
             this.panel9.TabIndex = 2;
             // 
             // btnServerWatchGame
@@ -603,6 +604,7 @@
             // panel4
             // 
             this.panel4.BackColor = System.Drawing.SystemColors.Control;
+            this.panel4.Controls.Add(this.label4);
             this.panel4.Controls.Add(this.edtServerActivateGameRunnerForServer);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel4.Location = new System.Drawing.Point(3, 3);
@@ -610,10 +612,20 @@
             this.panel4.Size = new System.Drawing.Size(878, 480);
             this.panel4.TabIndex = 1;
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(12, 13);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(752, 18);
+            this.label4.TabIndex = 14;
+            this.label4.Text = "Для того, чтобы проводить серверные матчи, требуется авторизоваться, используя сп" +
+    "ециальный пароль";
+            // 
             // edtServerActivateGameRunnerForServer
             // 
             this.edtServerActivateGameRunnerForServer.AutoSize = true;
-            this.edtServerActivateGameRunnerForServer.Location = new System.Drawing.Point(16, 22);
+            this.edtServerActivateGameRunnerForServer.Location = new System.Drawing.Point(15, 43);
             this.edtServerActivateGameRunnerForServer.Name = "edtServerActivateGameRunnerForServer";
             this.edtServerActivateGameRunnerForServer.Size = new System.Drawing.Size(123, 22);
             this.edtServerActivateGameRunnerForServer.TabIndex = 0;
@@ -724,6 +736,13 @@
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "k,kj,k,jk";
             // 
+            // labelStatus
+            // 
+            this.labelStatus.Name = "labelStatus";
+            this.labelStatus.Size = new System.Drawing.Size(140, 17);
+            this.labelStatus.Text = "labelStatus (visible=false)";
+            this.labelStatus.Visible = false;
+            // 
             // openFileDialog1
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
@@ -731,13 +750,6 @@
             // refreshTimer
             // 
             this.refreshTimer.Interval = 16;
-            // 
-            // labelStatus
-            // 
-            this.labelStatus.Name = "labelStatus";
-            this.labelStatus.Size = new System.Drawing.Size(140, 17);
-            this.labelStatus.Text = "labelStatus (visible=false)";
-            this.labelStatus.Visible = false;
             // 
             // StartForm
             // 
@@ -848,5 +860,6 @@
         private System.Windows.Forms.CheckBox edtServerActivateGameRunnerForServer;
         private System.Windows.Forms.Button btnServerWatchGame;
         private System.Windows.Forms.ToolStripStatusLabel labelStatus;
+        private System.Windows.Forms.Label label4;
     }
 }

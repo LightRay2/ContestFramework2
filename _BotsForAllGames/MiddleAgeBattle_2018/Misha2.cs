@@ -45,7 +45,7 @@ namespace CSharpTemplate
                 house[i] = ReadInt();
             }
 
-            if (round < 80)
+            if (round < 40)
             {
                 int nearestEmpty = -1;
                 for(int i= 0; i < 9;i++){
@@ -62,7 +62,7 @@ namespace CSharpTemplate
             }
             else
             {
-                int eee = round / 40;
+                int eee = round / 20;
                 int aimPos = eee % 2 == 0 ? 0 : 8;
                 if (Math.Abs(pos - aimPos) <= 1)
                 {
@@ -74,7 +74,7 @@ namespace CSharpTemplate
                 else
                 {
                     int nextPos = aimPos == 0 ? pos - 1 : pos + 1;
-                    GoToTile(aimPos, (house[nextPos] < 3 ) ?( new Random().Next(3,6) ): (0), true);
+                    GoToTile(aimPos, (house[nextPos] < 3 ) ?( nextPos == 7? 5: new Random().Next(3,6) ): (0), true);
                 }
             }
         }
