@@ -44,6 +44,7 @@ namespace Contest2018
         public int action;//действие игрока
         public int pos;//его предыдущая позиция
         public int delta;
+        public string memory = null;
         public Turn()
         {
             fontOnTimeLine = Game2018.EFont.timelineNormal;
@@ -62,7 +63,7 @@ namespace Contest2018
 
         public int hptower = 20000;
         public int gold = 1000;
-        public string memory = "";
+        public string memory = null;
         public int pos = 0;
     }
     public enum TypeofObject
@@ -292,7 +293,7 @@ namespace Contest2018
                 }
                 st.AppendLine("");
             }
-            st.AppendLine(player.memory);
+            st.AppendLine(player.memory??"-1");
             this.st = st.ToString();
             return st.ToString(); ;
         }
@@ -310,8 +311,8 @@ namespace Contest2018
             }; //todo now in interface just edit turn, no return
 
 
-            turn.player = new Player();
-            // turn.player = player;
+            turn.player = new Player(); //todo нужно в будущем победить этот страх (видимо, во втором потоке и в первом Player разный, поэтому можно только номер команды использовать, а не прямую ссылку)
+            //turn.player = player;
             turn.player.name = player.name;
             turn.player.pos = player.pos;
             turn.player.hptower = player.hptower;
@@ -385,15 +386,11 @@ namespace Contest2018
 
                 try
                 {
-                    var nextString = s[2];
+                    var nextString = reader.ReadLine()??"";
                     if (nextString.StartsWith("memory "))
                     {
-                        player.memory = nextString.Substring(7);
+                        turn.memory = nextString.Substring(7);
                         turn.shortStatus += ". Использовано запоминание";
-                    }
-                    else
-                    {
-                        player.memory = null;
                     }
                     return turn;
                 }
@@ -459,6 +456,8 @@ namespace Contest2018
         }
         public void ProcessRoundAndSetTotalStage(Round round)
         {
+            round.turns.ForEach(x => players[ x.player.team].memory = x.memory);
+
             // frame.Circle(Color.Green, 200 + 100 * round.turns[0].x + 50, 200 + 100 * round.turns[0].y + 50, 45);
             // anim = new Animator<Vector2d>(Animator.Linear,new Vector2d( 200 + 100 * round.turns[0].x + 50, 200 + 100 * round.turns[0].y + 50), new Vector2d(200 + 100 * round.turns[0].x + 50, 200 + 100 * round.turns[0].y + 50), 1);
             // animdb = new Animator<int>(Linear, 0, 255, 1);
@@ -543,9 +542,9 @@ namespace Contest2018
                         }
                     case 6:
                         {
-                            if (players[currentplayer].gold >= 400 && gameobjects.Find(x => x.obj == TypeofObject.observationtower && players[currentplayer].pos == x.pos) != null)
+                            if (players[currentplayer].gold >= 200 && gameobjects.Find(x => x.obj == TypeofObject.observationtower && players[currentplayer].pos == x.pos) != null)
                             {
-                                players[currentplayer].gold -= 400;
+                                players[currentplayer].gold -= 200;
                                 for (int i = 0; i < gameobjects.Count; i++)
                                 {
                                     double Purpose = -100;
@@ -609,10 +608,10 @@ namespace Contest2018
                     {
                         if (gameobjects[i].obj == TypeofObject.farm && Math.Abs(17 * currentplayer - gameobjects[i].pos) < 9)
                         {
-                            players[currentplayer].gold += 100;
+                            players[currentplayer].gold += 50;
                         }
                     }
-                    players[currentplayer].gold += 100;
+                    players[currentplayer].gold += 50;
                 }
             }
             deadGameObjects= gameobjects.Where(x => x.hp <= 0).ToList();

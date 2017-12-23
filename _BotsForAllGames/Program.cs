@@ -20,8 +20,8 @@ namespace CSharpTemplate
             //var typeName = SolverA.Run();
             //var typeName = SolverB.Run();
             //var typeName = Misha1.Run();
-            var typeName = Misha2.Run();
-
+            //var typeName = Misha2.Run();
+            var typeName = Misha3.Run();
 
 
             //код ниже переименовывает и переносит exe в папку output, например, он будет называться /_OUTPUT_USE_SHOW_ALL_FILES/SimpleGameEasy.exe
