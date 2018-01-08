@@ -96,22 +96,25 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="_Content\images\background.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="_Content\images\ballistal.gif">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="_Content\images\ballistar.gif">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="_Content\images\cannonl.jpg">
+    <Content Include="_Content\images\cannonl.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="_Content\images\cannonr.jpg">
+    <Content Include="_Content\images\cannonr.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="_Content\images\catapultl.jpg">
+    <Content Include="_Content\images\catapultl.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="_Content\images\catapultr.jpg">
+    <Content Include="_Content\images\catapultr.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="_Content\images\explosion.png">
@@ -123,10 +126,13 @@
     <Content Include="_Content\images\observationtower.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="_Content\images\playerl.jpg">
+    <Content Include="_Content\images\playerl.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="_Content\images\playerr.jpg">
+    <Content Include="_Content\images\playerr.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_Content\images\smoke.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="_Content\images\tower.png">
