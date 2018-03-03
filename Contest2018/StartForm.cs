@@ -196,7 +196,7 @@ namespace Contest2018
         {
             if (string.IsNullOrEmpty(formState.JavaPath) == false && File.Exists(formState.JavaPath))
                 return true; //уже задан
-            bool required = programAddresses.Any(x=>x.Substring(x.Length - 4) == ".jar");
+            bool required = programAddresses.Any(x=>x!=null&& x.Substring(x.Length - 4) == ".jar");
 
             if (required == false)
                 return true;
