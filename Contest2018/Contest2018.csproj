@@ -135,7 +135,10 @@
     <Content Include="_Content\images\smoke.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="_Content\images\tower.png">
+    <Content Include="_Content\images\towerl.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_Content\images\towerr.gif">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="_Content\Misha1.exe" />

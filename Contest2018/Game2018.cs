@@ -62,9 +62,22 @@ namespace Contest2018
         public int team;
 
         public int hptower = 20000;
+        public int Gold
+        {
+            get
+            {
+                return gold;
+            }
+            set
+            {
+                income += value - gold;
+                gold = value;
+            }
+        }
         public int gold = 1000;
         public string memory = null;
         public int pos = 0;
+        public int income = 0;
     }
     public enum TypeofObject
     {
@@ -117,10 +130,21 @@ namespace Contest2018
             timelineError,
             main,
             player0,
-            player1
+            player1,
+            str1,
+            str2,
+            str3,
+            str4,
+            str5,
+            str6,
+            str7,
+            str8,
+            str9,
+            str10,
         }
         enum ESprite {
-            tower,
+            towerr,
+            towerl,
             cannonl,
             cannonr,
             ballistal,
@@ -183,7 +207,7 @@ namespace Contest2018
         {
             FrameworkSettings.GameNameEnglish = "SimpleGame";
             FrameworkSettings.RunGameImmediately = false;
-            FrameworkSettings.AllowFastGameInBackgroundThread = true;
+            FrameworkSettings.AllowFastGameInBackgroundThread = false;
             FrameworkSettings.FramesPerTurn = 20;
 
             FrameworkSettings.PlayersPerGameMin = 2;
@@ -200,7 +224,6 @@ namespace Contest2018
             FrameworkSettings.Timeline.TurnScrollSpeedByPageUpDown = 100;
             FrameworkSettings.Timeline.FollowAnimationTimeMs = 600;
         }
-
         public void LoadSpritesAndFonts()
         {
             if (FontList.All.Count == 0 && SpriteList.All.Count == 0)
@@ -213,7 +236,14 @@ namespace Contest2018
                 FontList.Load(EFont.player0, "Times New Roman", 30.0, Color.Green, FontStyle.Bold);
                 FontList.Load(EFont.player1, "Times New Roman", 30.0, Color.DarkRed, FontStyle.Bold);
 
-                SpriteList.Load(ESprite.tower, -90);
+                for(int i=0;i<10;i++)
+                {                   
+                    FontList.Load((EFont)(i+5), "Times New Roman", 20.0, Color.FromArgb(255*(10-i)/10,Color.Black), FontStyle.Bold);
+                }
+
+                
+                SpriteList.Load(ESprite.towerr, -90);
+                SpriteList.Load(ESprite.towerl, -90);
                 SpriteList.Load(ESprite.ballistal, -90);
                 SpriteList.Load(ESprite.ballistar, -90);
                 SpriteList.Load(ESprite.cannonl, -90);
@@ -237,20 +267,20 @@ namespace Contest2018
 
 
         Rect2d _arena = new Rect2d(0, 0, 100, 100);
-        int _turnLimit = 120;
+        int _turnLimit = 200;
         public string GetInputFile(Player player)
         {
             var st = new StringBuilder();
             st.AppendLine(roundNumber.ToString());
             if (player.team == 0)
             {
-                st.AppendLine(player.hptower.ToString() + " " + player.gold.ToString() + " " + player.pos.ToString());
-                st.AppendLine(players[(player.team + 1) % 2].hptower.ToString() + " " + players[(player.team + 1) % 2].gold.ToString() + " " + players[(player.team + 1) % 2].pos.ToString());
+                st.AppendLine(player.hptower.ToString() + " " + player.Gold.ToString() + " " + player.pos.ToString());
+                st.AppendLine(players[(player.team + 1) % 2].hptower.ToString() + " " + players[(player.team + 1) % 2].Gold.ToString() + " " + players[(player.team + 1) % 2].pos.ToString());
             }
             else
             {
-                st.AppendLine(player.hptower.ToString() + " " + player.gold.ToString() + " " + (17 - player.pos).ToString());
-                st.AppendLine(players[(player.team + 1) % 2].hptower.ToString() + " " + players[(player.team + 1) % 2].gold.ToString() + " " + (17 - players[(player.team + 1) % 2].pos).ToString());
+                st.AppendLine(player.hptower.ToString() + " " + player.Gold.ToString() + " " + (17 - player.pos).ToString());
+                st.AppendLine(players[(player.team + 1) % 2].hptower.ToString() + " " + players[(player.team + 1) % 2].Gold.ToString() + " " + (17 - players[(player.team + 1) % 2].pos).ToString());
             }
             //st.AppendLine(gameobjects.Count.ToString());
             int[] arrt = new int[18];
@@ -323,8 +353,9 @@ namespace Contest2018
             turn.player.memory = player.memory;
             turn.player.team = player.team;
             turn.player.controlledByHuman = player.controlledByHuman;
-            turn.player.gold = player.gold;
+            turn.player.Gold = player.Gold;
             turn.player.programAddress = player.programAddress;
+            turn.pos = player.pos;
             if (executionResult == ExecuteResult.Ok)
             {
                 var reader = new StringReader(output);
@@ -429,13 +460,14 @@ namespace Contest2018
         public void PreparationsBeforeRound()
         {
             //FollowingPlayer = (FollowingPlayer + 1) % 2;
+            injuredobj = new int[18];
         }
 
         Animator<int> animobject;
         List<Animator<Vector2d>> animshells;
+        List<int> animstrdamage;
         Animator<int> animplayer0;
         Animator<int> animplayer1;
-        ObjectGame obj;
         public static int Linear(int start, int finish, double stage)
         {
             var dif = finish - start;
@@ -459,11 +491,16 @@ namespace Contest2018
             double newy = a * newx * newx + b * newx + c;
             return new Vector2d(newx, newy);
         }
-        List<int>  injuredobj= new List<int>();
+        int[] injuredobj= new int[18];
+        int[] gamedamage;
         public void ProcessRoundAndSetTotalStage(Round round)
         {
+            gamedamage = new int[20];
+            countflystr = 0;
             round.turns.ForEach(x => players[ x.player.team].memory = x.memory);
-            injuredobj = new List<int>();
+            players[0].income = 0;
+            players[1].income = 0;
+            injuredobj = new int[18];
             // frame.Circle(Color.Green, 200 + 100 * round.turns[0].x + 50, 200 + 100 * round.turns[0].y + 50, 45);
             // anim = new Animator<Vector2d>(Animator.Linear,new Vector2d( 200 + 100 * round.turns[0].x + 50, 200 + 100 * round.turns[0].y + 50), new Vector2d(200 + 100 * round.turns[0].x + 50, 200 + 100 * round.turns[0].y + 50), 1);
             // animdb = new Animator<int>(Linear, 0, 255, 1);
@@ -475,6 +512,7 @@ namespace Contest2018
             if ((round.turns[0].action == 6 || round.turns[1].action == 6))
                 round.totalStage += 1.3;
             animshells = new List<Animator<Vector2d>>();
+            animstrdamage = new List<int>();
             for(int i=0;i<gameobjects.Count;i++)
             {
                 gameobjects[i].isnew = false;
@@ -503,54 +541,54 @@ namespace Contest2018
                 {
                     case 1:
                         {
-                            if (players[currentplayer].gold >= 600 + roundNumber)
+                            if (players[currentplayer].Gold >= 600 + roundNumber)
                             {
-                                players[currentplayer].gold -= 600 + roundNumber;
+                                players[currentplayer].Gold -= 600 + roundNumber;
                                 gameobjects.Add(new ObjectGame(TypeofObject.farm, 150, 0, 0, round.turns[k].player.pos));
                             }
                             break;
                         }
                     case 2:
                         {
-                            if (players[currentplayer].gold >= 200)
+                            if (players[currentplayer].Gold >= 200)
                             {
-                                players[currentplayer].gold -= 200;
+                                players[currentplayer].Gold -= 200;
                                 gameobjects.Add(new ObjectGame(TypeofObject.observationtower, 200, 0, 0, round.turns[k].player.pos));
                             }
                             break;
                         }
                     case 3:
                         {
-                            if (players[currentplayer].gold >= 1000 - 3 * roundNumber)
+                            if (players[currentplayer].Gold >= 1000 - 3 * roundNumber)
                             {
-                                players[currentplayer].gold -= 1000 - 3 * roundNumber;
+                                players[currentplayer].Gold -= 1000 - 3 * roundNumber;
                                 gameobjects.Add(new ObjectGame(TypeofObject.catapult, 100, 8, 50, round.turns[k].player.pos));
                             }
                             break;
                         }
                     case 4:
                         {
-                            if (players[currentplayer].gold >= 1800 - 5 * roundNumber)
+                            if (players[currentplayer].Gold >= 1800 - 5 * roundNumber)
                             {
-                                players[currentplayer].gold -= 1800 - 5 * roundNumber;
+                                players[currentplayer].Gold -= 1800 - 5 * roundNumber;
                                 gameobjects.Add(new ObjectGame(TypeofObject.cannon, 175, 10, 75, round.turns[k].player.pos));
                             }
                             break;
                         }
                     case 5:
                         {
-                            if (players[currentplayer].gold >= 1600 - 7 * roundNumber)
+                            if (players[currentplayer].Gold >= 1600 - 7 * roundNumber)
                             {
-                                players[currentplayer].gold -= 1600 - 7 * roundNumber;
+                                players[currentplayer].Gold -= 1600 - 7 * roundNumber;
                                 gameobjects.Add(new ObjectGame(TypeofObject.ballista, 100, 12, 60, round.turns[k].player.pos));
                             }
                             break;
                         }
                     case 6:
                         {
-                            if (players[currentplayer].gold >= 200 && gameobjects.Find(x => x.obj == TypeofObject.observationtower && players[currentplayer].pos == x.pos) != null)
+                            if (players[currentplayer].Gold >= 200 && gameobjects.Find(x => x.obj == TypeofObject.observationtower && players[currentplayer].pos == x.pos) != null)
                             {
-                                players[currentplayer].gold -= 200;
+                                players[currentplayer].Gold -= 200;
                                 for (int i = 0; i < gameobjects.Count; i++)
                                 {
                                     double Purpose = -100;
@@ -579,27 +617,39 @@ namespace Contest2018
                                     {
                                         if (Purpose < 0)
                                         {
+                                            gamedamage[0]+= gameobjects[i].damage;
                                             players[0].hptower -= gameobjects[i].damage;
+                                            animstrdamage.Add(0);
                                         }
                                         else
                                         {
                                             if (Purpose > 17)
                                             {
                                                 players[1].hptower -= gameobjects[i].damage;
+                                                gamedamage[19] += gameobjects[i].damage;
+                                                animstrdamage.Add(19);
                                             }
                                             else
                                             {
+                                                bool ok = false;
                                                 for (int j = 0; j < gameobjects.Count; j++)
                                                 {
                                                     if (Purpose == gameobjects[j].pos)
                                                     {
                                                         int last = gameobjects[j].hp;
                                                         gameobjects[j].hp -= gameobjects[i].damage;
+                                                        ok = true;
+                                                        gamedamage[gameobjects[j].pos + 1]+= gameobjects[i].damage;
+                                                        animstrdamage.Add(gameobjects[j].pos + 1);
                                                         if (gameobjects[j].hp<50 && last>70)
                                                         {
-                                                            injuredobj.Add(j);
+                                                            injuredobj[gameobjects[j].pos]=-1;
                                                         }
                                                     }
+                                                }
+                                                if (ok == false)
+                                                {
+                                                    animstrdamage.Add(-1);
                                                 }
                                             }
                                         }
@@ -619,10 +669,10 @@ namespace Contest2018
                     {
                         if (gameobjects[i].obj == TypeofObject.farm && Math.Abs(17 * currentplayer - gameobjects[i].pos) < 9)
                         {
-                            players[currentplayer].gold += 50;
+                            players[currentplayer].Gold += 50;
                         }
                     }
-                    players[currentplayer].gold += 50;
+                    players[currentplayer].Gold += 50;
                 }
             }
             deadGameObjects= gameobjects.Where(x => x.hp <= 0).ToList();
@@ -633,7 +683,10 @@ namespace Contest2018
             }
 
         }
+        double countflystr = 0;
         const int sizeobj = 60;
+        double[] arrshift = { 0.25,1.5, 2.7 , 3.4 , 4.4 , 5.5, 0.25, 1.5, 2.7, 3.4, 4.4, 5.5, 0.25, 1.5, 2.7, 3.4, 4.4, 5.5, 0.25, 1.5, 2.7, 3.4, 4.4, 5.5 };
+        double[] arrver = { 0,2.1, 3.8, 5.6 };
         public void DrawAll(Frame frame, double stage, double totalStage, bool humanMove, GlInput input) //todo human move??
         {
             //!!! будьте внимательны (ранний drawall перед любыми методами)
@@ -673,23 +726,12 @@ namespace Contest2018
                 frame.Polygon(Color.FromArgb(40, 40, 40), new Rect2d(100 + 65 * i, ylinecenter - 32, 5, 70));
             }
             frame.Polygon(Color.SaddleBrown, new Rect2d(100 + 65 * 9, ylinecenter-82, 5, 230));
-            frame.SpriteCenter(ESprite.tower, 60, ylinecenter-8 , angleDeg: 90);
-            frame.SpriteCenter(ESprite.tower, 1310, ylinecenter-8, angleDeg: 90);
+            frame.SpriteCenter(ESprite.towerl, 65, ylinecenter-28 , angleDeg: 90);
+            frame.SpriteCenter(ESprite.towerr, 1315, ylinecenter-28, angleDeg: 90);
 
             //полоса статуса
             double firstforse= players[0].hptower / 100;
             double secondforse = players[1].hptower / 100;
-            for(int i=0;i<gameobjects.Count;i++)
-            {
-                if (gameobjects[i].pos <= 8)
-                {
-                    firstforse += gameobjects[i].hp/2 + 2*gameobjects[i].damage;
-                }
-                else
-                {
-                    secondforse += gameobjects[i].hp/2 + 2*gameobjects[i].damage;
-                }
-            }
             double rel = firstforse / (secondforse + firstforse);
             frame.Polygon(Color.Green, new Rect2d(100, 800, 1200*rel, 40));
             frame.Polygon(Color.DarkRed, new Rect2d(100+1200 * rel, 800, 1200 *(1- rel), 40));
@@ -753,17 +795,23 @@ namespace Contest2018
                                 break;
                             }
                     }
-                    if (!(injuredobj.Exists((x) => x == i)))
-                    { 
-                       if (aliveAndDeadObjects[i].hp < 70)
+                    if (injuredobj[aliveAndDeadObjects[i].pos]==0)
+                    {
+                        if (aliveAndDeadObjects[i].hp < 70 && totalStage != 0)
                         {
-                            int frameNumber = (int)(stage * 24 / totalStage) - 1;
-                            frame.SpriteCenter(ESprite.smoke, 132 + 65 * aliveAndDeadObjects[i].pos, ylinecenter - 22, sizeExact: new Vector2d(120, 90), frameNumber: frameNumber);
-                            if (aliveAndDeadObjects[i].hp < 40)
-                                frame.SpriteCenter(ESprite.smoke, 132 + 65 * aliveAndDeadObjects[i].pos+10, ylinecenter - 22, sizeExact: new Vector2d(120, 90), frameNumber: frameNumber);
+                            int framenum = (int)(stage * 24 / totalStage);
+                            framenum = framenum % 24;
+                            int inn = framenum / 6;
+                            double c = arrver[inn];
+                            //int frameNumber=(int)c;
 
+                            frame.SpriteCenter(ESprite.smoke, 132 + 65 * aliveAndDeadObjects[i].pos + arrshift[framenum], ylinecenter - 22 + c, sizeExact: new Vector2d(120, 90), frameNumber: framenum);
+                            if (aliveAndDeadObjects[i].hp < 40)
+                                frame.SpriteCenter(ESprite.smoke, 132 + 65 * aliveAndDeadObjects[i].pos + 10 + arrshift[framenum], ylinecenter - 22 + c, sizeExact: new Vector2d(120, 90), frameNumber: framenum);
+                            // frame.Polygon(Color.Green, new Rect2d(132 + 65 * aliveAndDeadObjects[i].pos, ylinecenter - 22, 100, 100));
                         }
                     }
+
                 }
             }
             if (stage>1 || totalStage<1)
@@ -820,26 +868,31 @@ namespace Contest2018
                                 }
                         }
                     }
+            bool ok = false;
             for (int i = 0; i < animshells.Count; i++)
             {
                 if (totalStage - stage < 1.3)
                 {
                     if (totalStage - stage > 0.3)
                         frame.Circle(Color.Black, animshells[i].Get(1.3 - (totalStage - stage)), 10);
-                    else {
+                    else
+                    {
                         int frameNumber = (int)(((0.3 - (totalStage - stage)) * 10) * 10).ToRange(0, 29);
-                       // if (frameNumber < 29) {
-                            frame.SpriteCenter(ESprite.explosion, animshells[i].Get(stage), sizeExact: new Vector2d(100), frameNumber: frameNumber);
-                             
-                        //  }
+                        frame.SpriteCenter(ESprite.explosion, animshells[i].Get(stage), sizeExact: new Vector2d(100), frameNumber: frameNumber);
+                        ok = true;
+                        if(countflystr<10&& animstrdamage[i]!=-1)
+                        {
+                          frame.TextCustomAnchor((EFont)(countflystr + 5), (gamedamage[animstrdamage[i]]).ToString(), 0.6, countflystr/6, animshells[i].finish.X, animshells[i].finish.Y+50);
+                        }
                     }
                 }
             }
-
-
-
-            frame.TextCustomAnchor(EFont.player0, players[0].gold.ToString(), 0, 0, Vector2d.Zero + new Vector2d(100,200));
-            frame.TextCustomAnchor(EFont.player1, players[1].gold.ToString(), 1, 0, Vector2d.UnitX * 1400 + new Vector2d(-100,200));
+            if(ok)
+            {
+                countflystr++;
+            }
+            frame.TextCustomAnchor(EFont.player0, players[0].Gold.ToString()+"("+players[0].income.ToString()+")", 0, 0, Vector2d.Zero + new Vector2d(100,200));
+            frame.TextCustomAnchor(EFont.player1, players[1].Gold.ToString() + "(" + players[1].income.ToString() + ")", 1, 0, Vector2d.UnitX * 1400 + new Vector2d(-100,200));
 
             frame.TextCustomAnchor(EFont.player0, players[0].name, 0, 0, Vector2d.Zero + new Vector2d(100));
             frame.TextCustomAnchor(EFont.player1, players[1].name, 1, 0, Vector2d.UnitX * 1400 + new Vector2d(-100, 100));
