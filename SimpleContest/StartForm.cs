@@ -391,7 +391,7 @@ C:\Program Files\Java\jre1.8.0_73 )";
                     {
                         var label = new Label { AutoSize = true };
                         label.Location = new Point(labelServerGamePlayersAndResults.Location.X, starty + dy * i);
-                        label.Text = " " + string.Join(" ", games[i].Item3.Select(x=>$"{x.Item1}({x.Item2})"));
+                        label.Text = " " + string.Join(" ", games[i].Item3.Select(x=>string.Format("{0}({1})", x.Item1, x.Item2)));
                         labelServerGameTime.Parent.Controls.Add(label);
                     }
                     {
@@ -601,7 +601,11 @@ C:\Program Files\Java\jre1.8.0_73 )";
                 _login = login;
                 _password = password;
 
+<<<<<<< HEAD
                // _messageFromServerRefreshTimer.Tick += (o, e) => { while (_messagesFromServer.TryTake(out string message)) _MessageFromServerHandler(message); };
+=======
+                _messageFromServerRefreshTimer.Tick += (o, e) => { string message; while (_messagesFromServer.TryTake(out message)) _MessageFromServerHandler(message); };
+>>>>>>> 8ad12c5f7d52c5f4adb901ecc554ce38cc73e41c
                 _messageFromServerRefreshTimer.Start();
 
                 //hubProxy.On("hello", () => Invoke(new Action(() => this.Text = "Success")));

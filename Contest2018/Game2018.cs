@@ -131,6 +131,7 @@ namespace Contest2018
             main,
             player0,
             player1,
+<<<<<<< HEAD
             str1,
             str2,
             str3,
@@ -141,6 +142,9 @@ namespace Contest2018
             str8,
             str9,
             str10,
+=======
+            humanTurn
+>>>>>>> 8ad12c5f7d52c5f4adb901ecc554ce38cc73e41c
         }
         enum ESprite {
             towerr,
@@ -205,7 +209,7 @@ namespace Contest2018
 
         public static void SetFrameworkSettings()
         {
-            FrameworkSettings.GameNameEnglish = "SimpleGame";
+            FrameworkSettings.GameNameEnglish = "Contest 2018";
             FrameworkSettings.RunGameImmediately = false;
             FrameworkSettings.AllowFastGameInBackgroundThread = false;
             FrameworkSettings.FramesPerTurn = 20;
@@ -235,6 +239,7 @@ namespace Contest2018
 
                 FontList.Load(EFont.player0, "Times New Roman", 30.0, Color.Green, FontStyle.Bold);
                 FontList.Load(EFont.player1, "Times New Roman", 30.0, Color.DarkRed, FontStyle.Bold);
+                FontList.Load(EFont.humanTurn, "Times New Roman", 20.0, Color.DarkBlue, FontStyle.Bold);
 
                 for(int i=0;i<10;i++)
                 {                   
@@ -331,6 +336,24 @@ namespace Contest2018
             this.st = st.ToString();
             return st.ToString(); ;
         }
+
+        int _humanSelectedMoveFromMinus1ToPlus1 = 0;
+        int _humanSelectedActionFrom0To6 = 0;
+        bool _humanMadeTurn = false;
+        Player _humanMakingTurn ;
+        public Turn TryGetHumanTurn(Player player, GlInput input)
+        {
+            _humanMakingTurn = player;
+            if (_humanMadeTurn)
+            {
+                _humanMadeTurn = false;
+                return GetProgramTurn(player,
+                    (_humanSelectedMoveFromMinus1ToPlus1 == -1 ? "L" : _humanSelectedMoveFromMinus1ToPlus1 == 1 ? "R" : "S") + " " + _humanSelectedActionFrom0To6.ToString(),
+                     ExecuteResult.Ok, "");
+            }
+            return null;
+        }
+
 
         public Turn GetProgramTurn(Player player, string output, ExecuteResult executionResult, string executionResultRussianComment)
         {
@@ -697,8 +720,6 @@ namespace Contest2018
            // frame.SpriteCenter(ESprite.background, 500, 500, angleDeg: 90, sizeOnlyHeight: 1400, sizeOnlyWidth: 1000);                                                                          //frame.SpriteCorner(ESprite.brownGrunge, 0, -100, sizeOnlyHeight: frameHeight + 100);
             frame.SpriteCorner(ESprite.background, 0, 0, angleDeg: 90, sizeExact:new Vector2d( 1400, 1000),opacity:40);
             //todo nikita если щелкаем на первый квадратик, никакого process еще не произошло, а отрисовывать что то нужно. я пока написал, чтобы не вылетало, но это не выход:
-            if (animshells == null)
-                return;
 
             //  frame.SpriteCorner(ESprite.back2, 0, 0, sizeOnlyWidth: frameWidth);
 
@@ -868,11 +889,16 @@ namespace Contest2018
                                 }
                         }
                     }
+<<<<<<< HEAD
             bool ok = false;
             for (int i = 0; i < animshells.Count; i++)
+=======
+            if (animshells != null)
+>>>>>>> 8ad12c5f7d52c5f4adb901ecc554ce38cc73e41c
             {
-                if (totalStage - stage < 1.3)
+                for (int i = 0; i < animshells.Count; i++)
                 {
+<<<<<<< HEAD
                     if (totalStage - stage > 0.3)
                         frame.Circle(Color.Black, animshells[i].Get(1.3 - (totalStage - stage)), 10);
                     else
@@ -883,6 +909,19 @@ namespace Contest2018
                         if(countflystr<10&& animstrdamage[i]!=-1)
                         {
                           frame.TextCustomAnchor((EFont)(countflystr + 5), (gamedamage[animstrdamage[i]]).ToString(), 0.6, countflystr/6, animshells[i].finish.X, animshells[i].finish.Y+50);
+=======
+                    if (totalStage - stage < 1.3)
+                    {
+                        if (totalStage - stage > 0.3)
+                            frame.Circle(Color.Black, animshells[i].Get(1.3 - (totalStage - stage)), 10);
+                        else
+                        {
+                            int frameNumber = (int)(((0.3 - (totalStage - stage)) * 10) * 10).ToRange(0, 29);
+                            // if (frameNumber < 29) {
+                            frame.SpriteCenter(ESprite.explosion, animshells[i].Get(stage), sizeExact: new Vector2d(100), frameNumber: frameNumber);
+
+                            //  }
+>>>>>>> 8ad12c5f7d52c5f4adb901ecc554ce38cc73e41c
                         }
                     }
                 }
@@ -900,6 +939,73 @@ namespace Contest2018
             var offset = Vector2d.UnitY * 70;
             frame.TextCustomAnchor(EFont.player0, players[0].hptower.ToString(), 0, 0, Vector2d.Zero + new Vector2d(100,800)+ offset);
             frame.TextCustomAnchor(EFont.player1, players[1].hptower.ToString(), 1, 0, Vector2d.UnitX * 1400 + new Vector2d(-100, 800)+ offset);
+
+
+
+            if (humanMove)
+            {
+                var humanOffset = _humanMakingTurn.team == 0 ? 100 : 690;
+                frame.TextTopLeft(EFont.humanTurn, "Выберите ход:", new Vector2d( humanOffset, 640));
+                var rectSize = 42;
+                var movements = new List<Tuple<Rect2d, string, int>>
+                {
+                    Tuple.Create(new Rect2d(rectSize*0 + humanOffset, 690, new Vector2d(rectSize)) , "L", -1 ),
+                    Tuple.Create(new Rect2d(rectSize*1 + humanOffset, 690, new Vector2d(rectSize)) , "S", 0 ),
+                    Tuple.Create(new Rect2d(rectSize*2 + humanOffset, 690, new Vector2d(rectSize)) , "R", 1 ),
+                };
+                var actions = new List<Tuple<Rect2d, int>>
+                {
+                    Tuple.Create(new Rect2d(rectSize*4 + humanOffset, 690, new Vector2d(rectSize)), 0 ),
+                    Tuple.Create(new Rect2d(rectSize*5 + humanOffset, 690, new Vector2d(rectSize)), 1 ),
+                    Tuple.Create(new Rect2d(rectSize*6 + humanOffset, 690, new Vector2d(rectSize)), 2 ),
+                    Tuple.Create(new Rect2d(rectSize*7 + humanOffset, 690, new Vector2d(rectSize)), 3 ),
+                    Tuple.Create(new Rect2d(rectSize*8 + humanOffset, 690, new Vector2d(rectSize)), 4 ),
+                    Tuple.Create(new Rect2d(rectSize*9 + humanOffset, 690, new Vector2d(rectSize)), 5 ),
+                };
+                var okButton = new Rect2d(rectSize * 11 + humanOffset, 690, new Vector2d(rectSize));
+
+                int btnCounter = 0;
+                movements.ForEach(x =>
+                {
+                    frame.Polygon(Color.Gray, x.Item1);
+                    frame.TextCenter(EFont.humanTurn, x.Item2, x.Item1.center);
+                    input.Button(x.Item1, (btnCounter++).ToString());
+                    if (x.Item3 == _humanSelectedMoveFromMinus1ToPlus1)
+                        frame.Path(Color.DarkCyan, 2, x.Item1);
+                });
+                actions.ForEach(x =>
+                {
+                    frame.Polygon(Color.Gray, x.Item1);
+                    frame.TextCenter(EFont.humanTurn, x.Item2.ToString(), x.Item1.center);
+                    input.Button(x.Item1, (btnCounter++).ToString());
+                    if (x.Item2 == _humanSelectedActionFrom0To6)
+                        frame.Path(Color.DarkCyan, 4, x.Item1);
+                });
+                frame.Polygon(Color.Gray, okButton);
+                frame.TextCenter(EFont.humanTurn, "ОК", okButton.center);
+                input.Button(okButton, btnCounter.ToString());
+
+                var allButtonRects = movements.Select(x => x.Item1).Union(actions.Select(x => x.Item1).Union(new List<Rect2d> { okButton })).ToList();
+                int useless;
+                var underMouse = input.AllButtonsUnderMouse().Where(x=>int.TryParse(x,out useless)).Select(x => int.Parse(x)).ToList();
+                if (underMouse.Count > 0)
+                {
+                    frame.Path(Color.Cyan, 2, allButtonRects[underMouse[0]]);
+                }
+                var clicked = input.AllClickedButtons().Where(x => int.TryParse(x, out useless)).Select(x => int.Parse(x)).ToList();
+                if(clicked.Count > 0)
+                {
+                    var index = clicked[0];
+                    if (index <= 2)
+                        _humanSelectedMoveFromMinus1ToPlus1 = index - 1;
+                    else if (index <= 8)
+                        _humanSelectedActionFrom0To6 = index - 3;
+                    else if (index == 9)
+                        _humanMadeTurn = true;
+                }
+            }
+
+
             // frame.TextCenter(EFont.player0, st, 300, 550);//вывод всего кода
 
 
@@ -989,10 +1095,7 @@ namespace Contest2018
 
         }
 
-        public Turn TryGetHumanTurn(Player player, GlInput input)
-        {
-            return new Turn();
-        }
+        
 
     }
 }
