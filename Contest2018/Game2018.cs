@@ -491,8 +491,6 @@ namespace Contest2018
             //FollowingPlayer = (FollowingPlayer + 1) % 2;
             injuredobj = new int[18];
         }
-
-        Animator<int> animobject;
         List<Animator<Vector2d>> animshells = new List<Animator<Vector2d>>();
         List<int> animstrdamage;
         Animator<int> animplayer0;
@@ -562,12 +560,6 @@ namespace Contest2018
                     //  animplayer0 = new Animator<int>(Linear, 65 * players[0].pos, 65 * players[0].pos, 0);
                     animplayer1 = new Animator<int>(Linear, 65 * round.turns[k].pos, 65 * players[1].pos, 1);
                 }
-
-                if (round.turns[k].action != 0 && round.turns[k].action != 6)
-                {
-                    gameobjects.RemoveAll((x) => x.pos == round.turns[k].player.pos);
-                    animobject = new Animator<int>(Linear, 0, 255, 0.5);
-                }
                 switch (round.turns[k].action)
                 {
                     case 1:
@@ -575,6 +567,7 @@ namespace Contest2018
                             if (players[currentplayer].Gold >= 600 + roundNumber)
                             {
                                 players[currentplayer].Gold -= 600 + roundNumber;
+                                gameobjects.RemoveAll((x) => x.pos == round.turns[k].player.pos);
                                 gameobjects.Add(new ObjectGame(TypeofObject.farm, 150, 0, 0, round.turns[k].player.pos));
                             }
                             break;
@@ -584,6 +577,7 @@ namespace Contest2018
                             if (players[currentplayer].Gold >= 200)
                             {
                                 players[currentplayer].Gold -= 200;
+                                gameobjects.RemoveAll((x) => x.pos == round.turns[k].player.pos);
                                 gameobjects.Add(new ObjectGame(TypeofObject.observationtower, 200, 0, 0, round.turns[k].player.pos));
                             }
                             break;
@@ -593,6 +587,7 @@ namespace Contest2018
                             if (players[currentplayer].Gold >= 1000 - 3 * roundNumber)
                             {
                                 players[currentplayer].Gold -= 1000 - 3 * roundNumber;
+                                gameobjects.RemoveAll((x) => x.pos == round.turns[k].player.pos);
                                 gameobjects.Add(new ObjectGame(TypeofObject.catapult, 100, 8, 50, round.turns[k].player.pos));
                             }
                             break;
@@ -602,6 +597,7 @@ namespace Contest2018
                             if (players[currentplayer].Gold >= 1800 - 5 * roundNumber)
                             {
                                 players[currentplayer].Gold -= 1800 - 5 * roundNumber;
+                                gameobjects.RemoveAll((x) => x.pos == round.turns[k].player.pos);
                                 gameobjects.Add(new ObjectGame(TypeofObject.cannon, 175, 10, 75, round.turns[k].player.pos));
                             }
                             break;
@@ -611,6 +607,7 @@ namespace Contest2018
                             if (players[currentplayer].Gold >= 1600 - 7 * roundNumber)
                             {
                                 players[currentplayer].Gold -= 1600 - 7 * roundNumber;
+                                gameobjects.RemoveAll((x) => x.pos == round.turns[k].player.pos);
                                 gameobjects.Add(new ObjectGame(TypeofObject.ballista, 100, 12, 60, round.turns[k].player.pos));
                             }
                             break;
@@ -672,7 +669,7 @@ namespace Contest2018
                                                         ok = true;
                                                         gamedamage[gameobjects[j].pos + 1] += gameobjects[i].damage;
                                                         animstrdamage.Add(gameobjects[j].pos + 1);
-                                                        if (gameobjects[j].hp < 50 && last > 70)
+                                                        if (gameobjects[j].hp < 70 && last >= 70)
                                                         {
                                                             injuredobj[gameobjects[j].pos] = -1;
                                                         }
