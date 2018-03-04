@@ -145,7 +145,9 @@ namespace Contest2018
             str8,
             str9,
             str10,
-            humanTurn
+            humanTurn,
+            playerCommon,
+            playerCommonBig
         }
         enum ESprite
         {
@@ -213,7 +215,7 @@ namespace Contest2018
         {
             FrameworkSettings.GameNameEnglish = "Contest 2018";
             FrameworkSettings.RunGameImmediately = false;
-            FrameworkSettings.AllowFastGameInBackgroundThread = false;
+            FrameworkSettings.AllowFastGameInBackgroundThread = true;
             FrameworkSettings.FramesPerTurn = 20;
 
             FrameworkSettings.PlayersPerGameMin = 2;
@@ -239,6 +241,8 @@ namespace Contest2018
 
                 FontList.Load(EFont.main, "Times New Roman", 30.0, Color.Black, FontStyle.Bold);
 
+                FontList.Load(EFont.playerCommon, "Times New Roman", 22.0, Color.Black, FontStyle.Bold);
+                FontList.Load(EFont.playerCommonBig, "Times New Roman", 30.0, Color.Black, FontStyle.Bold);
                 FontList.Load(EFont.player0, "Times New Roman", 30.0, Color.Green, FontStyle.Bold);
                 FontList.Load(EFont.player1, "Times New Roman", 30.0, Color.DarkRed, FontStyle.Bold);
                 FontList.Load(EFont.humanTurn, "Times New Roman", 20.0, Color.DarkBlue, FontStyle.Bold);
@@ -723,8 +727,15 @@ namespace Contest2018
             frame.PolygonWithDepth(Color.White, -100, new Rect2d(0, 0, 1400, 1050)); //todo line around polygon
                                                                                      // frame.SpriteCenter(ESprite.background, 500, 500, angleDeg: 90, sizeOnlyHeight: 1400, sizeOnlyWidth: 1000);                                                                          //frame.SpriteCorner(ESprite.brownGrunge, 0, -100, sizeOnlyHeight: frameHeight + 100);
             frame.SpriteCorner(ESprite.background, 0, 0, angleDeg: 90, sizeExact: new Vector2d(1400, 1050), opacity: 40);
-            //todo nikita если щелкаем на первый квадратик, никакого process еще не произошло, а отрисовывать что то нужно. я пока написал, чтобы не вылетало, но это не выход:
 
+            frame.Polygon(Color.FromArgb(50, Color.Black), new Rect2d(0, 0, 1400, 250));
+            frame.Polygon(Color.FromArgb(50, Color.Black), new Rect2d(0, 650, 1400, 1250));
+
+            frame.Polygon(Color.FromArgb(30, Color.Black), new Rect2d(50, 50, 600, 150));
+            frame.Polygon(Color.FromArgb(30, Color.Black), new Rect2d(700, 50, 600, 150));
+
+            frame.Path(Color.FromArgb(200, Color.DarkGreen), 4, new Rect2d(50, 50, 600, 150));
+            frame.Path(Color.FromArgb(200, Color.DarkRed), 4, new Rect2d(700, 50, 600, 150));
             //  frame.SpriteCorner(ESprite.back2, 0, 0, sizeOnlyWidth: frameWidth);
 
             //var fieldCorner = new Vector2d(10, 10);
@@ -755,11 +766,14 @@ namespace Contest2018
             frame.SpriteCenter(ESprite.towerr, 1315, ylinecenter - 28, angleDeg: 90);
 
             //полоса статуса
+            double statusY = 850;
             double firstforse = players[0].hptower / 100;
             double secondforse = players[1].hptower / 100;
             double rel = firstforse / (secondforse + firstforse);
-            frame.Polygon(Color.Green, new Rect2d(100, 800, 1200 * rel, 40));
-            frame.Polygon(Color.DarkRed, new Rect2d(100 + 1200 * rel, 800, 1200 * (1 - rel), 40));
+            frame.Polygon(Color.FromArgb(120, Color.DarkGreen), new Rect2d(100, statusY, 1175 * rel, 40));
+            frame.Polygon(Color.FromArgb(120, Color.DarkRed), new Rect2d(100 + 1175 * rel, statusY, 1175 * (1 - rel), 40));
+            frame.Path(Color.FromArgb(250, Color.DarkGreen), 4, new Rect2d(100, statusY, 1175 * rel, 40));
+            frame.Path(Color.FromArgb(250, Color.DarkRed), 4, new Rect2d(100 + 1175 * rel, statusY, 1175 * (1 - rel), 40));
 
             if (animplayer0 != null)
             {
@@ -916,39 +930,46 @@ namespace Contest2018
             {
                 countflystr++;
             }
-            frame.TextCustomAnchor(EFont.player0,string.Format("{0} ( + {1} - {2} )",  players[0].Gold,  players[0].income, players[0].outcome),  0, 0, Vector2d.Zero + new Vector2d(100, 200));
-            frame.TextCustomAnchor(EFont.player1, string.Format("{0} ( + {1} - {2} )", players[1].Gold, players[1].income, players[1].outcome),  1, 0, Vector2d.UnitX * 1400 + new Vector2d(-100, 200));
 
-            frame.TextCustomAnchor(EFont.player0, players[0].name, 0, 0, Vector2d.Zero + new Vector2d(100));
-            frame.TextCustomAnchor(EFont.player1, players[1].name, 1, 0, Vector2d.UnitX * 1400 + new Vector2d(-100, 100));
+            frame.TextCustomAnchor(EFont.playerCommon, players[0].name, 0, 0, Vector2d.Zero + new Vector2d(100,70));
+            frame.TextCustomAnchor(EFont.playerCommon, players[1].name, 1, 0, Vector2d.UnitX * 1350 + new Vector2d(-100, 70));
+
+            frame.TextCustomAnchor(EFont.playerCommon, string.Format("Очки: {0}", players[0].hptower), 0, 0, Vector2d.Zero + new Vector2d(100, 110));
+            frame.TextCustomAnchor(EFont.playerCommon, string.Format("Очки: {0}", players[1].hptower), 1, 0, Vector2d.UnitX * 1350 + new Vector2d(-100, 110));
+
+            frame.TextCustomAnchor(EFont.playerCommon,string.Format("Ресурсы: {0} ( + {1} - {2} )",  players[0].Gold,  players[0].income, players[0].outcome),  0, 0, Vector2d.Zero + new Vector2d(100, 150));
+            frame.TextCustomAnchor(EFont.playerCommon, string.Format("Ресурсы: {0} ( + {1} - {2} )", players[1].Gold, players[1].income, players[1].outcome),  1, 0, Vector2d.UnitX * 1350 + new Vector2d(-100, 150));
+
 
             var offset = Vector2d.UnitY * 70;
-            frame.TextCustomAnchor(EFont.player0, players[0].hptower.ToString(), 0, 0, Vector2d.Zero + new Vector2d(100, 800) + offset);
-            frame.TextCustomAnchor(EFont.player1, players[1].hptower.ToString(), 1, 0, Vector2d.UnitX * 1400 + new Vector2d(-100, 800) + offset);
+          //  frame.TextCustomAnchor(EFont.playerCommonBig, players[0].hptower.ToString(), 0, 0, Vector2d.Zero + new Vector2d(100, statusY) + offset);
+        //    frame.TextCustomAnchor(EFont.playerCommonBig, players[1].hptower.ToString(), 1, 0, Vector2d.UnitX * 1400 + new Vector2d(-125, statusY) + offset);
 
 
 
             if (humanMove)
             {
                 var humanOffset = _humanMakingTurn.team == 0 ? 100 : 690;
-                frame.TextTopLeft(EFont.humanTurn, "Выберите ход:", new Vector2d(humanOffset, 640));
+                double yone = 680, ytwo = 730;
+                frame.TextTopLeft(EFont.humanTurn, "Выберите ход:", new Vector2d(humanOffset, yone));
                 var rectSize = 42;
                 var movements = new List<Tuple<Rect2d, string, int>>
                 {
-                    Tuple.Create(new Rect2d(rectSize*0 + humanOffset, 690, new Vector2d(rectSize)) , "L", -1 ),
-                    Tuple.Create(new Rect2d(rectSize*1 + humanOffset, 690, new Vector2d(rectSize)) , "S", 0 ),
-                    Tuple.Create(new Rect2d(rectSize*2 + humanOffset, 690, new Vector2d(rectSize)) , "R", 1 ),
+                    Tuple.Create(new Rect2d(rectSize*0 + humanOffset, ytwo, new Vector2d(rectSize)) , "L", -1 ),
+                    Tuple.Create(new Rect2d(rectSize*1 + humanOffset, ytwo, new Vector2d(rectSize)) , "S", 0 ),
+                    Tuple.Create(new Rect2d(rectSize*2 + humanOffset, ytwo, new Vector2d(rectSize)) , "R", 1 ),
                 };
                 var actions = new List<Tuple<Rect2d, int>>
                 {
-                    Tuple.Create(new Rect2d(rectSize*4 + humanOffset, 690, new Vector2d(rectSize)), 0 ),
-                    Tuple.Create(new Rect2d(rectSize*5 + humanOffset, 690, new Vector2d(rectSize)), 1 ),
-                    Tuple.Create(new Rect2d(rectSize*6 + humanOffset, 690, new Vector2d(rectSize)), 2 ),
-                    Tuple.Create(new Rect2d(rectSize*7 + humanOffset, 690, new Vector2d(rectSize)), 3 ),
-                    Tuple.Create(new Rect2d(rectSize*8 + humanOffset, 690, new Vector2d(rectSize)), 4 ),
-                    Tuple.Create(new Rect2d(rectSize*9 + humanOffset, 690, new Vector2d(rectSize)), 5 ),
+                    Tuple.Create(new Rect2d(rectSize*4 + humanOffset, ytwo, new Vector2d(rectSize)), 0 ),
+                    Tuple.Create(new Rect2d(rectSize*5 + humanOffset, ytwo, new Vector2d(rectSize)), 1 ),
+                    Tuple.Create(new Rect2d(rectSize*6 + humanOffset, ytwo, new Vector2d(rectSize)), 2 ),
+                    Tuple.Create(new Rect2d(rectSize*7 + humanOffset, ytwo, new Vector2d(rectSize)), 3 ),
+                    Tuple.Create(new Rect2d(rectSize*8 + humanOffset, ytwo, new Vector2d(rectSize)), 4 ),
+                    Tuple.Create(new Rect2d(rectSize*9 + humanOffset, ytwo, new Vector2d(rectSize)), 5 ),
+                    Tuple.Create(new Rect2d(rectSize*10 + humanOffset, ytwo, new Vector2d(rectSize)), 6 ),
                 };
-                var okButton = new Rect2d(rectSize * 11 + humanOffset, 690, new Vector2d(rectSize));
+                var okButton = new Rect2d(rectSize * 12 + humanOffset, ytwo, new Vector2d(rectSize));
 
                 int btnCounter = 0;
                 movements.ForEach(x =>
@@ -984,9 +1005,9 @@ namespace Contest2018
                     var index = clicked[0];
                     if (index <= 2)
                         _humanSelectedMoveFromMinus1ToPlus1 = index - 1;
-                    else if (index <= 8)
+                    else if (index <= 9)
                         _humanSelectedActionFrom0To6 = index - 3;
-                    else if (index == 9)
+                    else if (index == 10)
                         _humanMadeTurn = true;
                 }
             }
