@@ -916,12 +916,13 @@ namespace Contest2018
                 input.Button(okButton, btnCounter.ToString());
 
                 var allButtonRects = movements.Select(x => x.Item1).Union(actions.Select(x => x.Item1).Union(new List<Rect2d> { okButton })).ToList();
-                var underMouse = input.AllButtonsUnderMouse().Where(x=>int.TryParse(x,out _)).Select(x => int.Parse(x)).ToList();
+                int useless;
+                var underMouse = input.AllButtonsUnderMouse().Where(x=>int.TryParse(x,out useless)).Select(x => int.Parse(x)).ToList();
                 if (underMouse.Count > 0)
                 {
                     frame.Path(Color.Cyan, 2, allButtonRects[underMouse[0]]);
                 }
-                var clicked = input.AllClickedButtons().Where(x => int.TryParse(x, out _)).Select(x => int.Parse(x)).ToList();
+                var clicked = input.AllClickedButtons().Where(x => int.TryParse(x, out useless)).Select(x => int.Parse(x)).ToList();
                 if(clicked.Count > 0)
                 {
                     var index = clicked[0];
