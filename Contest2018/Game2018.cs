@@ -70,7 +70,10 @@ namespace Contest2018
             }
             set
             {
-                income += value - gold;
+                if (value >= gold)
+                    income += value - gold;
+                else
+                    outcome += gold - value;
                 gold = value;
             }
         }
@@ -78,14 +81,15 @@ namespace Contest2018
         public string memory = null;
         public int pos = 0;
         public int income = 0;
+        public int outcome = 0;
     }
     public enum TypeofObject
     {
-        farm=1,
+        farm = 1,
         observationtower = 2,
-        catapult =3,
-        cannon=4,
-        ballista=5,
+        catapult = 3,
+        cannon = 4,
+        ballista = 5,
     }
 
     public class ObjectGame
@@ -96,7 +100,7 @@ namespace Contest2018
         public int pos;
         public int damage;
         public bool isnew;//для отрисовки
-        public ObjectGame( TypeofObject obj, int hp, int distance,int damage,int pos)
+        public ObjectGame(TypeofObject obj, int hp, int distance, int damage, int pos)
         {
             this.hp = hp;
             this.obj = obj;
@@ -131,7 +135,6 @@ namespace Contest2018
             main,
             player0,
             player1,
-<<<<<<< HEAD
             str1,
             str2,
             str3,
@@ -142,11 +145,10 @@ namespace Contest2018
             str8,
             str9,
             str10,
-=======
             humanTurn
->>>>>>> 8ad12c5f7d52c5f4adb901ecc554ce38cc73e41c
         }
-        enum ESprite {
+        enum ESprite
+        {
             towerr,
             towerl,
             cannonl,
@@ -241,12 +243,12 @@ namespace Contest2018
                 FontList.Load(EFont.player1, "Times New Roman", 30.0, Color.DarkRed, FontStyle.Bold);
                 FontList.Load(EFont.humanTurn, "Times New Roman", 20.0, Color.DarkBlue, FontStyle.Bold);
 
-                for(int i=0;i<10;i++)
-                {                   
-                    FontList.Load((EFont)(i+5), "Times New Roman", 20.0, Color.FromArgb(255*(10-i)/10,Color.Black), FontStyle.Bold);
+                for (int i = 0; i < 10; i++)
+                {
+                    FontList.Load((EFont)(i + 5), "Times New Roman", 20.0, Color.FromArgb(255 * (10 - i) / 10, Color.Black), FontStyle.Bold);
                 }
 
-                
+
                 SpriteList.Load(ESprite.towerr, -90);
                 SpriteList.Load(ESprite.towerl, -90);
                 SpriteList.Load(ESprite.ballistal, -90);
@@ -332,7 +334,7 @@ namespace Contest2018
                 }
                 st.AppendLine("");
             }
-            st.AppendLine(player.memory??"-1");
+            st.AppendLine(player.memory ?? "-1");
             this.st = st.ToString();
             return st.ToString(); ;
         }
@@ -340,7 +342,7 @@ namespace Contest2018
         int _humanSelectedMoveFromMinus1ToPlus1 = 0;
         int _humanSelectedActionFrom0To6 = 0;
         bool _humanMadeTurn = false;
-        Player _humanMakingTurn ;
+        Player _humanMakingTurn;
         public Turn TryGetHumanTurn(Player player, GlInput input)
         {
             _humanMakingTurn = player;
@@ -444,7 +446,7 @@ namespace Contest2018
 
                 try
                 {
-                    var nextString = reader.ReadLine()??"";
+                    var nextString = reader.ReadLine() ?? "";
                     if (nextString.StartsWith("memory "))
                     {
                         turn.memory = nextString.Substring(7);
@@ -487,7 +489,7 @@ namespace Contest2018
         }
 
         Animator<int> animobject;
-        List<Animator<Vector2d>> animshells;
+        List<Animator<Vector2d>> animshells = new List<Animator<Vector2d>>();
         List<int> animstrdamage;
         Animator<int> animplayer0;
         Animator<int> animplayer1;
@@ -514,29 +516,31 @@ namespace Contest2018
             double newy = a * newx * newx + b * newx + c;
             return new Vector2d(newx, newy);
         }
-        int[] injuredobj= new int[18];
+        int[] injuredobj = new int[18];
         int[] gamedamage;
         public void ProcessRoundAndSetTotalStage(Round round)
         {
             gamedamage = new int[20];
             countflystr = 0;
-            round.turns.ForEach(x => players[ x.player.team].memory = x.memory);
+            round.turns.ForEach(x => players[x.player.team].memory = x.memory);
             players[0].income = 0;
             players[1].income = 0;
+            players[0].outcome = 0;
+            players[1].outcome = 0;
             injuredobj = new int[18];
             // frame.Circle(Color.Green, 200 + 100 * round.turns[0].x + 50, 200 + 100 * round.turns[0].y + 50, 45);
             // anim = new Animator<Vector2d>(Animator.Linear,new Vector2d( 200 + 100 * round.turns[0].x + 50, 200 + 100 * round.turns[0].y + 50), new Vector2d(200 + 100 * round.turns[0].x + 50, 200 + 100 * round.turns[0].y + 50), 1);
             // animdb = new Animator<int>(Linear, 0, 255, 1);
             round.totalStage = 0;
             if (round.turns[0].delta != 0 || round.turns[1].delta != 0)
-               round.totalStage = 1;
+                round.totalStage = 1;
             if ((round.turns[0].action != 0 && round.turns[0].action != 6) || (round.turns[1].action != 0 && round.turns[1].action != 6))
                 round.totalStage += 0.5;
             if ((round.turns[0].action == 6 || round.turns[1].action == 6))
                 round.totalStage += 1.3;
             animshells = new List<Animator<Vector2d>>();
             animstrdamage = new List<int>();
-            for(int i=0;i<gameobjects.Count;i++)
+            for (int i = 0; i < gameobjects.Count; i++)
             {
                 gameobjects[i].isnew = false;
             }
@@ -640,7 +644,7 @@ namespace Contest2018
                                     {
                                         if (Purpose < 0)
                                         {
-                                            gamedamage[0]+= gameobjects[i].damage;
+                                            gamedamage[0] += gameobjects[i].damage;
                                             players[0].hptower -= gameobjects[i].damage;
                                             animstrdamage.Add(0);
                                         }
@@ -662,11 +666,11 @@ namespace Contest2018
                                                         int last = gameobjects[j].hp;
                                                         gameobjects[j].hp -= gameobjects[i].damage;
                                                         ok = true;
-                                                        gamedamage[gameobjects[j].pos + 1]+= gameobjects[i].damage;
+                                                        gamedamage[gameobjects[j].pos + 1] += gameobjects[i].damage;
                                                         animstrdamage.Add(gameobjects[j].pos + 1);
-                                                        if (gameobjects[j].hp<50 && last>70)
+                                                        if (gameobjects[j].hp < 50 && last > 70)
                                                         {
-                                                            injuredobj[gameobjects[j].pos]=-1;
+                                                            injuredobj[gameobjects[j].pos] = -1;
                                                         }
                                                     }
                                                 }
@@ -698,7 +702,7 @@ namespace Contest2018
                     players[currentplayer].Gold += 50;
                 }
             }
-            deadGameObjects= gameobjects.Where(x => x.hp <= 0).ToList();
+            deadGameObjects = gameobjects.Where(x => x.hp <= 0).ToList();
             gameobjects.RemoveAll(x => x.hp <= 0);
             if (roundNumber == _turnLimit || players[0].hptower * players[1].hptower <= 0)
             {
@@ -708,8 +712,8 @@ namespace Contest2018
         }
         double countflystr = 0;
         const int sizeobj = 60;
-        double[] arrshift = { 0.25,1.5, 2.7 , 3.4 , 4.4 , 5.5, 0.25, 1.5, 2.7, 3.4, 4.4, 5.5, 0.25, 1.5, 2.7, 3.4, 4.4, 5.5, 0.25, 1.5, 2.7, 3.4, 4.4, 5.5 };
-        double[] arrver = { 0,2.1, 3.8, 5.6 };
+        double[] arrshift = { 0.25, 1.5, 2.7, 3.4, 4.4, 5.5, 0.25, 1.5, 2.7, 3.4, 4.4, 5.5, 0.25, 1.5, 2.7, 3.4, 4.4, 5.5, 0.25, 1.5, 2.7, 3.4, 4.4, 5.5 };
+        double[] arrver = { 0, 2.1, 3.8, 5.6 };
         public void DrawAll(Frame frame, double stage, double totalStage, bool humanMove, GlInput input) //todo human move??
         {
             //!!! будьте внимательны (ранний drawall перед любыми методами)
@@ -717,8 +721,8 @@ namespace Contest2018
             frame.CameraViewport(1400, 1050);
 
             frame.PolygonWithDepth(Color.White, -100, new Rect2d(0, 0, 1400, 1050)); //todo line around polygon
-           // frame.SpriteCenter(ESprite.background, 500, 500, angleDeg: 90, sizeOnlyHeight: 1400, sizeOnlyWidth: 1000);                                                                          //frame.SpriteCorner(ESprite.brownGrunge, 0, -100, sizeOnlyHeight: frameHeight + 100);
-            frame.SpriteCorner(ESprite.background, 0, 0, angleDeg: 90, sizeExact:new Vector2d( 1400, 1000),opacity:40);
+                                                                                     // frame.SpriteCenter(ESprite.background, 500, 500, angleDeg: 90, sizeOnlyHeight: 1400, sizeOnlyWidth: 1000);                                                                          //frame.SpriteCorner(ESprite.brownGrunge, 0, -100, sizeOnlyHeight: frameHeight + 100);
+            frame.SpriteCorner(ESprite.background, 0, 0, angleDeg: 90, sizeExact: new Vector2d(1400, 1050), opacity: 40);
             //todo nikita если щелкаем на первый квадратик, никакого process еще не произошло, а отрисовывать что то нужно. я пока написал, чтобы не вылетало, но это не выход:
 
             //  frame.SpriteCorner(ESprite.back2, 0, 0, sizeOnlyWidth: frameWidth);
@@ -741,21 +745,21 @@ namespace Contest2018
             // if (_manAnimators.Count != 0) //т е еще не было process turn
             //  {
             //frame.Polygon(Color.Black, new Rect2d(100, 300, 1170, 5));
-            frame.Polygon(Color.FromArgb(40,40,40), new Rect2d(100, ylinecenter + 33, 1170, 5));
+            frame.Polygon(Color.FromArgb(40, 40, 40), new Rect2d(100, ylinecenter + 33, 1170, 5));
             for (int i = 0; i < 19; i++)
             {
                 frame.Polygon(Color.FromArgb(40, 40, 40), new Rect2d(100 + 65 * i, ylinecenter - 32, 5, 70));
             }
-            frame.Polygon(Color.SaddleBrown, new Rect2d(100 + 65 * 9, ylinecenter-82, 5, 230));
-            frame.SpriteCenter(ESprite.towerl, 65, ylinecenter-28 , angleDeg: 90);
-            frame.SpriteCenter(ESprite.towerr, 1315, ylinecenter-28, angleDeg: 90);
+            frame.Polygon(Color.SaddleBrown, new Rect2d(100 + 65 * 9, ylinecenter - 82, 5, 230));
+            frame.SpriteCenter(ESprite.towerl, 65, ylinecenter - 28, angleDeg: 90);
+            frame.SpriteCenter(ESprite.towerr, 1315, ylinecenter - 28, angleDeg: 90);
 
             //полоса статуса
-            double firstforse= players[0].hptower / 100;
+            double firstforse = players[0].hptower / 100;
             double secondforse = players[1].hptower / 100;
             double rel = firstforse / (secondforse + firstforse);
-            frame.Polygon(Color.Green, new Rect2d(100, 800, 1200*rel, 40));
-            frame.Polygon(Color.DarkRed, new Rect2d(100+1200 * rel, 800, 1200 *(1- rel), 40));
+            frame.Polygon(Color.Green, new Rect2d(100, 800, 1200 * rel, 40));
+            frame.Polygon(Color.DarkRed, new Rect2d(100 + 1200 * rel, 800, 1200 * (1 - rel), 40));
 
             if (animplayer0 != null)
             {
@@ -771,7 +775,7 @@ namespace Contest2018
                     {
                         case 1:
                             {
-                                frame.SpriteCenter(ESprite.farm, 132 + 65 * aliveAndDeadObjects[i].pos, ylinecenter+5, angleDeg: 90, sizeOnlyHeight: sizeobj, sizeOnlyWidth: sizeobj);
+                                frame.SpriteCenter(ESprite.farm, 132 + 65 * aliveAndDeadObjects[i].pos, ylinecenter + 5, angleDeg: 90, sizeOnlyHeight: sizeobj, sizeOnlyWidth: sizeobj);
                                 break;
                             }
                         case 2:
@@ -816,7 +820,7 @@ namespace Contest2018
                                 break;
                             }
                     }
-                    if (injuredobj[aliveAndDeadObjects[i].pos]==0)
+                    if (injuredobj[aliveAndDeadObjects[i].pos] == 0)
                     {
                         if (aliveAndDeadObjects[i].hp < 70 && totalStage != 0)
                         {
@@ -835,7 +839,7 @@ namespace Contest2018
 
                 }
             }
-            if (stage>1 || totalStage<1)
+            if (stage > 1 || totalStage < 1)
                 for (int i = 0; i < gameobjects.Count; i++)
                     if (gameobjects[i].isnew)
                     {
@@ -889,16 +893,11 @@ namespace Contest2018
                                 }
                         }
                     }
-<<<<<<< HEAD
             bool ok = false;
             for (int i = 0; i < animshells.Count; i++)
-=======
-            if (animshells != null)
->>>>>>> 8ad12c5f7d52c5f4adb901ecc554ce38cc73e41c
             {
-                for (int i = 0; i < animshells.Count; i++)
+                if (totalStage - stage < 1.3)
                 {
-<<<<<<< HEAD
                     if (totalStage - stage > 0.3)
                         frame.Circle(Color.Black, animshells[i].Get(1.3 - (totalStage - stage)), 10);
                     else
@@ -906,46 +905,33 @@ namespace Contest2018
                         int frameNumber = (int)(((0.3 - (totalStage - stage)) * 10) * 10).ToRange(0, 29);
                         frame.SpriteCenter(ESprite.explosion, animshells[i].Get(stage), sizeExact: new Vector2d(100), frameNumber: frameNumber);
                         ok = true;
-                        if(countflystr<10&& animstrdamage[i]!=-1)
+                        if (countflystr < 10 && animstrdamage[i] != -1)
                         {
-                          frame.TextCustomAnchor((EFont)(countflystr + 5), (gamedamage[animstrdamage[i]]).ToString(), 0.6, countflystr/6, animshells[i].finish.X, animshells[i].finish.Y+50);
-=======
-                    if (totalStage - stage < 1.3)
-                    {
-                        if (totalStage - stage > 0.3)
-                            frame.Circle(Color.Black, animshells[i].Get(1.3 - (totalStage - stage)), 10);
-                        else
-                        {
-                            int frameNumber = (int)(((0.3 - (totalStage - stage)) * 10) * 10).ToRange(0, 29);
-                            // if (frameNumber < 29) {
-                            frame.SpriteCenter(ESprite.explosion, animshells[i].Get(stage), sizeExact: new Vector2d(100), frameNumber: frameNumber);
-
-                            //  }
->>>>>>> 8ad12c5f7d52c5f4adb901ecc554ce38cc73e41c
+                            frame.TextCustomAnchor((EFont)(countflystr + 5), (gamedamage[animstrdamage[i]]).ToString(), 0.6, countflystr / 6, animshells[i].finish.X, animshells[i].finish.Y + 50);
                         }
                     }
                 }
             }
-            if(ok)
+            if (ok)
             {
                 countflystr++;
             }
-            frame.TextCustomAnchor(EFont.player0, players[0].Gold.ToString()+"("+players[0].income.ToString()+")", 0, 0, Vector2d.Zero + new Vector2d(100,200));
-            frame.TextCustomAnchor(EFont.player1, players[1].Gold.ToString() + "(" + players[1].income.ToString() + ")", 1, 0, Vector2d.UnitX * 1400 + new Vector2d(-100,200));
+            frame.TextCustomAnchor(EFont.player0,string.Format("{0} ( + {1} - {2} )",  players[0].Gold,  players[0].income, players[0].outcome),  0, 0, Vector2d.Zero + new Vector2d(100, 200));
+            frame.TextCustomAnchor(EFont.player1, string.Format("{0} ( + {1} - {2} )", players[1].Gold, players[1].income, players[1].outcome),  1, 0, Vector2d.UnitX * 1400 + new Vector2d(-100, 200));
 
             frame.TextCustomAnchor(EFont.player0, players[0].name, 0, 0, Vector2d.Zero + new Vector2d(100));
             frame.TextCustomAnchor(EFont.player1, players[1].name, 1, 0, Vector2d.UnitX * 1400 + new Vector2d(-100, 100));
 
             var offset = Vector2d.UnitY * 70;
-            frame.TextCustomAnchor(EFont.player0, players[0].hptower.ToString(), 0, 0, Vector2d.Zero + new Vector2d(100,800)+ offset);
-            frame.TextCustomAnchor(EFont.player1, players[1].hptower.ToString(), 1, 0, Vector2d.UnitX * 1400 + new Vector2d(-100, 800)+ offset);
+            frame.TextCustomAnchor(EFont.player0, players[0].hptower.ToString(), 0, 0, Vector2d.Zero + new Vector2d(100, 800) + offset);
+            frame.TextCustomAnchor(EFont.player1, players[1].hptower.ToString(), 1, 0, Vector2d.UnitX * 1400 + new Vector2d(-100, 800) + offset);
 
 
 
             if (humanMove)
             {
                 var humanOffset = _humanMakingTurn.team == 0 ? 100 : 690;
-                frame.TextTopLeft(EFont.humanTurn, "Выберите ход:", new Vector2d( humanOffset, 640));
+                frame.TextTopLeft(EFont.humanTurn, "Выберите ход:", new Vector2d(humanOffset, 640));
                 var rectSize = 42;
                 var movements = new List<Tuple<Rect2d, string, int>>
                 {
@@ -987,13 +973,13 @@ namespace Contest2018
 
                 var allButtonRects = movements.Select(x => x.Item1).Union(actions.Select(x => x.Item1).Union(new List<Rect2d> { okButton })).ToList();
                 int useless;
-                var underMouse = input.AllButtonsUnderMouse().Where(x=>int.TryParse(x,out useless)).Select(x => int.Parse(x)).ToList();
+                var underMouse = input.AllButtonsUnderMouse().Where(x => int.TryParse(x, out useless)).Select(x => int.Parse(x)).ToList();
                 if (underMouse.Count > 0)
                 {
                     frame.Path(Color.Cyan, 2, allButtonRects[underMouse[0]]);
                 }
                 var clicked = input.AllClickedButtons().Where(x => int.TryParse(x, out useless)).Select(x => int.Parse(x)).ToList();
-                if(clicked.Count > 0)
+                if (clicked.Count > 0)
                 {
                     var index = clicked[0];
                     if (index <= 2)
@@ -1095,7 +1081,7 @@ namespace Contest2018
 
         }
 
-        
+
 
     }
 }

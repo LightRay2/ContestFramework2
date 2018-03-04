@@ -600,12 +600,8 @@ C:\Program Files\Java\jre1.8.0_73 )";
                 _serverAddress = serverAddress;
                 _login = login;
                 _password = password;
-
-<<<<<<< HEAD
-               // _messageFromServerRefreshTimer.Tick += (o, e) => { while (_messagesFromServer.TryTake(out string message)) _MessageFromServerHandler(message); };
-=======
+                
                 _messageFromServerRefreshTimer.Tick += (o, e) => { string message; while (_messagesFromServer.TryTake(out message)) _MessageFromServerHandler(message); };
->>>>>>> 8ad12c5f7d52c5f4adb901ecc554ce38cc73e41c
                 _messageFromServerRefreshTimer.Start();
 
                 //hubProxy.On("hello", () => Invoke(new Action(() => this.Text = "Success")));
