@@ -61,7 +61,7 @@ namespace Contest2018
         public string name { get; set; }
         public int team;
 
-        public int hptower = 20000;
+        public int hptower = 8000;
         public int Gold
         {
             get
@@ -388,7 +388,7 @@ namespace Contest2018
             if (executionResult == ExecuteResult.Ok)
             {
                 var reader = new StringReader(output);
-                var s = reader.ReadLine().Split(' ');
+                var s = reader.ReadLine().Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 try
                 {
 
@@ -598,7 +598,7 @@ namespace Contest2018
                             {
                                 players[currentplayer].Gold -= 1800 - 5 * roundNumber;
                                 gameobjects.RemoveAll((x) => x.pos == round.turns[k].player.pos);
-                                gameobjects.Add(new ObjectGame(TypeofObject.cannon, 175, 10, 75, round.turns[k].player.pos));
+                                gameobjects.Add(new ObjectGame(TypeofObject.cannon, 200, 10, 75, round.turns[k].player.pos));
                             }
                             break;
                         }
