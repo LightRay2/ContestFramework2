@@ -598,11 +598,8 @@ namespace Contest2018
                             {
                                 players[currentplayer].Gold -= 1800 - 5 * roundNumber;
                                 gameobjects.RemoveAll((x) => x.pos == round.turns[k].player.pos);
-<<<<<<< HEAD
                                 gameobjects.Add(new ObjectGame(TypeofObject.cannon, 200, 10, 75, round.turns[k].player.pos));
-=======
-                                gameobjects.Add(new ObjectGame(TypeofObject.cannon, 250, 10, 75, round.turns[k].player.pos));
->>>>>>> a50952e4883fe723ddd5f6b2e1bdcc8b82378239
+
                             }
                             break;
                         }
