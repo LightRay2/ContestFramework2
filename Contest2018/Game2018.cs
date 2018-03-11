@@ -61,7 +61,7 @@ namespace Contest2018
         public string name { get; set; }
         public int team;
 
-        public int hptower = 8000;
+        public int hptower = 7000;
         public int Gold
         {
             get
@@ -568,7 +568,7 @@ namespace Contest2018
                             {
                                 players[currentplayer].Gold -= 600 + roundNumber;
                                 gameobjects.RemoveAll((x) => x.pos == round.turns[k].player.pos);
-                                gameobjects.Add(new ObjectGame(TypeofObject.farm, 150, 0, 0, round.turns[k].player.pos));
+                                gameobjects.Add(new ObjectGame(TypeofObject.farm, 160, 0, 0, round.turns[k].player.pos));
                             }
                             break;
                         }
@@ -701,7 +701,7 @@ namespace Contest2018
                             players[currentplayer].Gold += 50;
                         }
                     }
-                    players[currentplayer].Gold += 50;
+                    players[currentplayer].Gold += 30;
                 }
             }
             deadGameObjects = gameobjects.Where(x => x.hp <= 0).ToList();
