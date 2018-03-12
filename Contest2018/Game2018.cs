@@ -564,11 +564,11 @@ namespace Contest2018
                 {
                     case 1:
                         {
-                            if (players[currentplayer].Gold >= 600 + roundNumber)
+                            if (players[currentplayer].Gold >= 500 + roundNumber)
                             {
-                                players[currentplayer].Gold -= 600 + roundNumber;
+                                players[currentplayer].Gold -= 500 + roundNumber;
                                 gameobjects.RemoveAll((x) => x.pos == round.turns[k].player.pos);
-                                gameobjects.Add(new ObjectGame(TypeofObject.farm, 160, 0, 0, round.turns[k].player.pos));
+                                gameobjects.Add(new ObjectGame(TypeofObject.farm, 150, 0, 0, round.turns[k].player.pos));
                             }
                             break;
                         }
@@ -624,6 +624,7 @@ namespace Contest2018
                                     int r = _rand.Next(-1, 3);
                                     if (round.turns[k].player.team == 0 && gameobjects[i].pos < 9 && (int)gameobjects[i].obj > 2)
                                     {
+                                        gameobjects[i].hp -= (gameobjects[i].damage + 5) / 10-2+ (gameobjects[i].obj==TypeofObject.cannon ? 1:0);
                                         Purpose = Math.Min(18, (gameobjects[i].pos + gameobjects[i].distance + r % 2));
                                         double start = /*gameobjects[i].pos + */140 + 65 * gameobjects[i].pos;
                                         var finish = 140 + 65 * Purpose;
@@ -634,6 +635,7 @@ namespace Contest2018
                                     {
                                         if (round.turns[k].player.team == 1 && gameobjects[i].pos > 8 && (int)gameobjects[i].obj > 2)
                                         {
+                                            gameobjects[i].hp -= (gameobjects[i].damage + 5) / 10-2+ (gameobjects[i].obj == TypeofObject.cannon ? 1 : 0); ;
                                             Purpose = Math.Max(-1, (gameobjects[i].pos - gameobjects[i].distance - r % 2));
                                             double start = /*gameobjects[i].pos + */140 + 65 * gameobjects[i].pos;
                                             var finish = 140 + 65 * Purpose;
@@ -701,7 +703,7 @@ namespace Contest2018
                             players[currentplayer].Gold += 50;
                         }
                     }
-                    players[currentplayer].Gold += 30;
+                    players[currentplayer].Gold += 50;
                 }
             }
             deadGameObjects = gameobjects.Where(x => x.hp <= 0).ToList();
