@@ -624,7 +624,7 @@ namespace Contest2018
                                     int r = _rand.Next(-1, 3);
                                     if (round.turns[k].player.team == 0 && gameobjects[i].pos < 9 && (int)gameobjects[i].obj > 2)
                                     {
-                                        gameobjects[i].hp -= (gameobjects[i].damage + 5) / 10-2+ (gameobjects[i].obj==TypeofObject.cannon ? 1:0);
+                                        gameobjects[i].hp -= 5;// (gameobjects[i].damage + 5) / 10-2+ (gameobjects[i].obj==TypeofObject.cannon ? 1:0);
                                         Purpose = Math.Min(18, (gameobjects[i].pos + gameobjects[i].distance + r % 2));
                                         double start = /*gameobjects[i].pos + */140 + 65 * gameobjects[i].pos;
                                         var finish = 140 + 65 * Purpose;
@@ -635,7 +635,7 @@ namespace Contest2018
                                     {
                                         if (round.turns[k].player.team == 1 && gameobjects[i].pos > 8 && (int)gameobjects[i].obj > 2)
                                         {
-                                            gameobjects[i].hp -= (gameobjects[i].damage + 5) / 10-2+ (gameobjects[i].obj == TypeofObject.cannon ? 1 : 0); ;
+                                            gameobjects[i].hp -= 5;// (gameobjects[i].damage + 5) / 10-2+ (gameobjects[i].obj == TypeofObject.cannon ? 1 : 0); ;
                                             Purpose = Math.Max(-1, (gameobjects[i].pos - gameobjects[i].distance - r % 2));
                                             double start = /*gameobjects[i].pos + */140 + 65 * gameobjects[i].pos;
                                             var finish = 140 + 65 * Purpose;

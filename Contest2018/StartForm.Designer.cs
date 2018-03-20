@@ -56,6 +56,7 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.refreshTimer = new System.Windows.Forms.Timer(this.components);
+            this.label4 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabLocalGames.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -189,7 +190,7 @@
             // btnChangeOrder
             // 
             this.btnChangeOrder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnChangeOrder.Location = new System.Drawing.Point(171, 166);
+            this.btnChangeOrder.Location = new System.Drawing.Point(167, 166);
             this.btnChangeOrder.Name = "btnChangeOrder";
             this.btnChangeOrder.Size = new System.Drawing.Size(192, 35);
             this.btnChangeOrder.TabIndex = 4;
@@ -201,7 +202,7 @@
             // 
             this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.panel2.Controls.Add(this.btnRun);
-            this.panel2.Location = new System.Drawing.Point(310, 419);
+            this.panel2.Location = new System.Drawing.Point(306, 419);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(248, 69);
             this.panel2.TabIndex = 3;
@@ -230,7 +231,7 @@
             // btnClearSelection
             // 
             this.btnClearSelection.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClearSelection.Location = new System.Drawing.Point(369, 166);
+            this.btnClearSelection.Location = new System.Drawing.Point(365, 166);
             this.btnClearSelection.Name = "btnClearSelection";
             this.btnClearSelection.Size = new System.Drawing.Size(189, 35);
             this.btnClearSelection.TabIndex = 5;
@@ -241,9 +242,9 @@
             // tabHelp
             // 
             this.tabHelp.Controls.Add(this.panel3);
-            this.tabHelp.Location = new System.Drawing.Point(4, 22);
+            this.tabHelp.Location = new System.Drawing.Point(4, 27);
             this.tabHelp.Name = "tabHelp";
-            this.tabHelp.Size = new System.Drawing.Size(898, 523);
+            this.tabHelp.Size = new System.Drawing.Size(898, 518);
             this.tabHelp.TabIndex = 4;
             this.tabHelp.Text = "Помощь";
             this.tabHelp.UseVisualStyleBackColor = true;
@@ -251,6 +252,7 @@
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.SystemColors.Control;
+            this.panel3.Controls.Add(this.label4);
             this.panel3.Controls.Add(this.label9);
             this.panel3.Controls.Add(this.label8);
             this.panel3.Controls.Add(this.label7);
@@ -261,7 +263,7 @@
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel3.Location = new System.Drawing.Point(0, 0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(898, 523);
+            this.panel3.Size = new System.Drawing.Size(898, 518);
             this.panel3.TabIndex = 0;
             // 
             // label9
@@ -348,6 +350,16 @@
             // 
             this.refreshTimer.Interval = 16;
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(3, 428);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(226, 90);
+            this.label4.TabIndex = 8;
+            this.label4.Text = "Разработчики:\r\nБережнов Никита, 2 курс\r\nЗемлянухин Михаил, 6 курс\r\nРуководитель:\r" +
+    "\nСоломатин Дмитрий Иванович\r\n";
+            // 
             // StartForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -407,5 +419,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button btnChangeJavaPath;
+        private System.Windows.Forms.Label label4;
     }
 }
