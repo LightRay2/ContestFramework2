@@ -762,8 +762,8 @@ namespace Contest2018
                 frame.Polygon(Color.FromArgb(40, 40, 40), new Rect2d(100 + 65 * i, ylinecenter - 32, 5, 70));
             }
             frame.Polygon(Color.SaddleBrown, new Rect2d(100 + 65 * 9, ylinecenter - 82, 5, 230));
-            frame.SpriteCenter(ESprite.towerl, 65, ylinecenter - 28, angleDeg: 90);
-            frame.SpriteCenter(ESprite.towerr, 1315, ylinecenter - 28, angleDeg: 90);
+            frame.SpriteCenter(ESprite.towerl, 65, ylinecenter - 23, angleDeg: 90);
+            frame.SpriteCenter(ESprite.towerr, 1315, ylinecenter - 23, angleDeg: 90);
 
             //полоса статуса
             double statusY = 850;
@@ -777,8 +777,8 @@ namespace Contest2018
 
             if (animplayer0 != null)
             {
-                frame.SpriteCenter(ESprite.playerr, 132 + animplayer0.Get(stage > 1 ? 1 : stage), ylinecenter + 100);
-                frame.SpriteCenter(ESprite.playerl, 132 + animplayer1.Get(stage > 1 ? 1 : stage), ylinecenter + 100);
+                frame.SpriteCenter(ESprite.playerr, 132 + animplayer0.Get(stage > 1 ? 1 : stage), ylinecenter + 100,sizeExact:new Vector2d(100,100));
+                frame.SpriteCenter(ESprite.playerl, 132 + animplayer1.Get(stage > 1 ? 1 : stage), ylinecenter + 100, sizeExact: new Vector2d(100, 100));
             }
             var aliveAndDeadObjects = gameobjects.Union(deadGameObjects).ToList();
             for (int i = 0; i < aliveAndDeadObjects.Count; i++)
@@ -813,11 +813,11 @@ namespace Contest2018
                             {
                                 if (aliveAndDeadObjects[i].pos < 9)
                                 {
-                                    frame.SpriteCenter(ESprite.cannonr, 132 + 65 * aliveAndDeadObjects[i].pos, ylinecenter + 5, angleDeg: 90, sizeOnlyHeight: sizeobj, sizeOnlyWidth: sizeobj);
+                                    frame.SpriteCenter(ESprite.cannonr, 132 + 65 * aliveAndDeadObjects[i].pos, ylinecenter + 15, angleDeg: 90, sizeOnlyHeight: sizeobj, sizeOnlyWidth: sizeobj, sizeExact: new Vector2d(80, 60));
                                 }
                                 else
                                 {
-                                    frame.SpriteCenter(ESprite.cannonl, 132 + 65 * aliveAndDeadObjects[i].pos, ylinecenter + 5, angleDeg: 90, sizeOnlyHeight: sizeobj, sizeOnlyWidth: sizeobj);
+                                    frame.SpriteCenter(ESprite.cannonl, 132 + 65 * aliveAndDeadObjects[i].pos, ylinecenter + 15, angleDeg: 90, sizeOnlyHeight: sizeobj, sizeOnlyWidth: sizeobj,sizeExact: new Vector2d(80, 60));
                                 }
                                 break;
                             }
@@ -825,11 +825,11 @@ namespace Contest2018
                             {
                                 if (aliveAndDeadObjects[i].pos < 9)
                                 {
-                                    frame.SpriteCenter(ESprite.ballistar, 132 + 65 * aliveAndDeadObjects[i].pos, ylinecenter + 5, angleDeg: 90, sizeOnlyHeight: sizeobj, sizeOnlyWidth: sizeobj);
+                                    frame.SpriteCenter(ESprite.ballistar, 132 + 65 * aliveAndDeadObjects[i].pos, ylinecenter + 5, angleDeg: 90, sizeOnlyHeight: sizeobj, sizeOnlyWidth: sizeobj, sizeExact: new Vector2d(64, 50));
                                 }
                                 else
                                 {
-                                    frame.SpriteCenter(ESprite.ballistal, 132 + 65 * aliveAndDeadObjects[i].pos, ylinecenter + 5, angleDeg: 90, sizeOnlyHeight: sizeobj, sizeOnlyWidth: sizeobj);
+                                    frame.SpriteCenter(ESprite.ballistal, 132 + 65 * aliveAndDeadObjects[i].pos, ylinecenter + 5, angleDeg: 90, sizeOnlyHeight: sizeobj, sizeOnlyWidth: sizeobj, sizeExact: new Vector2d(64, 50));
                                 }
                                 break;
                             }
@@ -885,11 +885,11 @@ namespace Contest2018
                                 {
                                     if (gameobjects[i].pos < 9)
                                     {
-                                        frame.SpriteCenter(ESprite.cannonr, 132 + 65 * gameobjects[i].pos, ylinecenter + 5, angleDeg: 90, sizeOnlyHeight: sizeobj, sizeOnlyWidth: sizeobj);
+                                        frame.SpriteCenter(ESprite.cannonr, 132 + 65 * gameobjects[i].pos, ylinecenter + 15, angleDeg: 90, sizeOnlyHeight: sizeobj, sizeOnlyWidth: sizeobj, sizeExact: new Vector2d(80, 60));
                                     }
                                     else
                                     {
-                                        frame.SpriteCenter(ESprite.cannonl, 132 + 65 * gameobjects[i].pos, ylinecenter + 5, angleDeg: 90, sizeOnlyHeight: sizeobj, sizeOnlyWidth: sizeobj);
+                                        frame.SpriteCenter(ESprite.cannonl, 132 + 65 * gameobjects[i].pos, ylinecenter + 15, angleDeg: 90, sizeOnlyHeight: sizeobj, sizeOnlyWidth: sizeobj, sizeExact: new Vector2d(80, 60));
                                     }
                                     break;
                                 }
@@ -897,11 +897,11 @@ namespace Contest2018
                                 {
                                     if (gameobjects[i].pos < 9)
                                     {
-                                        frame.SpriteCenter(ESprite.ballistar, 132 + 65 * gameobjects[i].pos, ylinecenter + 5, angleDeg: 90, sizeOnlyHeight: sizeobj, sizeOnlyWidth: sizeobj);
+                                        frame.SpriteCenter(ESprite.ballistar, 132 + 65 * gameobjects[i].pos, ylinecenter + 5, angleDeg: 90, sizeOnlyHeight: sizeobj, sizeOnlyWidth: sizeobj, sizeExact: new Vector2d(64, 50));
                                     }
                                     else
                                     {
-                                        frame.SpriteCenter(ESprite.ballistal, 132 + 65 * gameobjects[i].pos, ylinecenter + 5, angleDeg: 90, sizeOnlyHeight: sizeobj, sizeOnlyWidth: sizeobj);
+                                        frame.SpriteCenter(ESprite.ballistal, 132 + 65 * gameobjects[i].pos, ylinecenter + 5, angleDeg: 90, sizeOnlyHeight: sizeobj, sizeOnlyWidth: sizeobj, sizeExact: new Vector2d(64, 50));
                                     }
                                     break;
                                 }
